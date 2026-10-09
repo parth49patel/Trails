@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct Path {
+	struct Firestore {
+		static let profiles = "profiles"
+	}
+}

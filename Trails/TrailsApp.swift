@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import FirebaseSignInWithApple
 
 @main
 struct TrailsApp: App {
+	
+	@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+	
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
+				.configureFirebaseSignInWithAppleWith(firestoreUserCollectionPath: Path.Firestore.profiles)
         }
     }
 }

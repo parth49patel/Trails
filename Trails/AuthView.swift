@@ -5,58 +5,83 @@
 //  Created by Parth Patel on 2026-10-07.
 //
 
-import Foundation
-import AuthenticationServices
-import FirebaseAuth
-import Combine
+import SwiftUI
+import FirebaseSignInWithApple
 
-@MainActor
-final class AuthViewModel: ObservableObject {
-	@Published var user: User?
-	@Published var errorMessage: String?
-	@Published var isLoading: Bool = false
+struct AuthView: View {
 	
-	init() {
-		self.user = Auth.auth().currentUser
-	}
-	
-	func handleAppleAuthorization(_ authorization: ASAuthorization) async {
-		guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-			  let rawNonce = SignInWithAppleHelper.shared.currentNonce,
-			  let identityToken = appleIDCredential.identityToken,
-			  let idTokenString = String(data: identityToken, encoding: .utf8) else {
-			self.errorMessage = "Unable to process Apple ID credentials."
-			return
+    var body: some View {
+		VStack(spacing: 32) {
+			Spacer()
+			
+			// MARK: - Logo & App Title
+			VStack(spacing: 16) {
+				ZStack {
+					Circle()
+						.fill(.accent.opacity(0.15))
+						.frame(width: 96, height: 96)
+					
+					Image(systemName: "figure.hiking")
+						.font(.system(size: 44, weight: .bold))
+						.foregroundStyle(.green)
+				}
+				
+				VStack(spacing: 6) {
+					Text("Trails")
+						.font(.system(.largeTitle, design: .rounded, weight: .bold))
+					
+					Text("Your Intelligent Outdoor Trail Companion")
+						.font(.subheadline)
+						.foregroundStyle(.secondary)
+				}
+			}
+			
+			// MARK: - Feature Overview
+			VStack(alignment: .leading, spacing: 14) {
+				FeatureRow(
+					icon: "map.fill",
+					title: "Live GPS & Heading",
+					description: "Track your route and compass orientation on maps.",
+					accent: .accent
+				)
+				
+				FeatureRow(
+					icon: "speaker.wave.2.fill",
+					title: "Hands-Free Audio",
+					description: "Hear automatic distance milestones while walking.",
+					accent: .accent
+				)
+				
+				FeatureRow(
+					icon: "video.fill",
+					title: "Scenic Waypoint Clips",
+					description: "Record 10-second memories pinned to the trail.",
+					accent: .accent
+				)
+			}
+			
+			Spacer()
+			
+			// MARK: - Sign-In Action
+			VStack(spacing: 12) {
+				FirebaseSignInWithAppleButton {
+					FirebaseSignInWithAppleLabel(.signIn)
+				}
+				.frame(height: 50)
+				.clipShape(RoundedRectangle(cornerRadius: 12))
+				
+				Text("Sign in to sync your hikes and saved trail markers.")
+					.font(.caption2)
+					.foregroundStyle(.tertiary)
+					.multilineTextAlignment(.center)
+			}
+			.padding(.horizontal, 24)
+			.padding(.bottom, 16)
 		}
-		
-		self.isLoading = true
-		self.errorMessage = nil
-		
-		// Construct Firebase OAuth credential
-		let credential = OAuthProvider.appleCredential(
-			withIDToken: idTokenString,
-			rawNonce: rawNonce,
-			fullName: appleIDCredential.fullName
-		)
-		
-		do {
-			let authResult = try await Auth.auth().signIn(with: credential)
-			self.user = authResult.user
-			self.isLoading = false
-			print("Successfully authenticated user: \(authResult.user.uid)")
-		} catch {
-			self.isLoading = false
-			self.errorMessage = error.localizedDescription
-			print("Firebase Apple Auth Error: \(error.localizedDescription)")
-		}
-	}
-	
-	func signOut() {
-		do {
-			try Auth.auth().signOut()
-			self.user = nil
-		} catch {
-			self.errorMessage = error.localizedDescription
-		}
-	}
+		.padding()
+    }
+}
+
+#Preview {
+    AuthView()
 }

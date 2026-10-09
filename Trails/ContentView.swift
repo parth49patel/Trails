@@ -6,14 +6,18 @@
 //
 
 import SwiftUI
+import FirebaseSignInWithApple
 
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+			FirebaseSignOutWithAppleButton {
+				FirebaseSignInWithAppleLabel(.signOut)
+			}
+			
+			FirebaseDeleteAccountWithAppleButton {
+				FirebaseSignInWithAppleLabel(.deleteAccount)
+			}
         }
         .padding()
     }
