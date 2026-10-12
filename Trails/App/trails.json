@@ -1,0 +1,119 @@
+[
+  {
+	"id": "oshawa_trail_01",
+	"name": "Joseph Kolodzie Oshawa Creek Trail",
+	"locationName": "Oshawa Valley Botanical Gardens, Oshawa",
+	"difficulty": "Easy",
+	"distanceKm": 7.0,
+	"elevationGainMeters": 45,
+	"estimatedDurationMinutes": 90,
+	"summary": "Paved path following scenic Oshawa Creek from the botanical gardens down to Lakeview Park. Popular for salmon watching in autumn.",
+	"startLatitude": 43.9002,
+	"startLongitude": -78.8680,
+	"coordinates": [
+	  { "latitude": 43.9002, "longitude": -78.8680 },
+	  { "latitude": 43.8925, "longitude": -78.8655 },
+	  { "latitude": 43.8820, "longitude": -78.8610 },
+	  { "latitude": 43.8715, "longitude": -78.8570 },
+	  { "latitude": 43.8610, "longitude": -78.8510 },
+	  { "latitude": 43.8525, "longitude": -78.8475 }
+	]
+  },
+  {
+	"id": "oshawa_trail_02",
+	"name": "Harmony Creek Trail",
+	"locationName": "Donevan Recreation Complex, Oshawa",
+	"difficulty": "Moderate",
+	"distanceKm": 4.0,
+	"elevationGainMeters": 38,
+	"estimatedDurationMinutes": 55,
+	"summary": "Multi-use paved trail meandering along the Harmony Creek ravine with steep slopes, dense tree canopies, and quiet bridges.",
+	"startLatitude": 43.9045,
+	"startLongitude": -78.8230,
+	"coordinates": [
+	  { "latitude": 43.9045, "longitude": -78.8230 },
+	  { "latitude": 43.8980, "longitude": -78.8205 },
+	  { "latitude": 43.8905, "longitude": -78.8185 },
+	  { "latitude": 43.8830, "longitude": -78.8160 },
+	  { "latitude": 43.8765, "longitude": -78.8140 }
+	]
+  },
+  {
+	"id": "oshawa_trail_03",
+	"name": "Michael Starr Trail",
+	"locationName": "Cowan Park, Central Oshawa",
+	"difficulty": "Easy",
+	"distanceKm": 5.0,
+	"elevationGainMeters": 25,
+	"estimatedDurationMinutes": 65,
+	"summary": "A paved rail-trail following the historic CN industrial spur corridor connecting Downtown Oshawa to surrounding neighbourhoods.",
+	"startLatitude": 43.8965,
+	"startLongitude": -78.8530,
+	"coordinates": [
+	  { "latitude": 43.8965, "longitude": -78.8530 },
+	  { "latitude": 43.9040, "longitude": -78.8505 },
+	  { "latitude": 43.9120, "longitude": -78.8480 },
+	  { "latitude": 43.9210, "longitude": -78.8450 },
+	  { "latitude": 43.9285, "longitude": -78.8420 }
+	]
+  },
+  {
+	"id": "oshawa_trail_04",
+	"name": "Oshawa Waterfront Trail",
+	"locationName": "Lakeview Park, Oshawa",
+	"difficulty": "Easy",
+	"distanceKm": 11.0,
+	"elevationGainMeters": 30,
+	"estimatedDurationMinutes": 140,
+	"summary": "Scenic Lake Ontario shoreline path passing through Lakeview Park, Ed Broadbent Waterfront Park, and coastal marshes.",
+	"startLatitude": 43.8520,
+	"startLongitude": -78.8480,
+	"coordinates": [
+	  { "latitude": 43.8520, "longitude": -78.8480 },
+	  { "latitude": 43.8540, "longitude": -78.8370 },
+	  { "latitude": 43.8575, "longitude": -78.8240 },
+	  { "latitude": 43.8615, "longitude": -78.8110 },
+	  { "latitude": 43.8640, "longitude": -78.7960 },
+	  { "latitude": 43.8670, "longitude": -78.7830 }
+	]
+  },
+  {
+	"id": "oshawa_trail_05",
+	"name": "McLaughlin Bay Wildlife Reserve",
+	"locationName": "Colonel Sam Drive, South Oshawa",
+	"difficulty": "Moderate",
+	"distanceKm": 7.0,
+	"elevationGainMeters": 40,
+	"estimatedDurationMinutes": 95,
+	"summary": "Protected 87-acre sanctuary featuring walking paths, gravel trails, and viewing platforms looking out over Lake Ontario and coastal wetlands.",
+	"startLatitude": 43.8652,
+	"startLongitude": -78.7925,
+	"coordinates": [
+	  { "latitude": 43.8652, "longitude": -78.7925 },
+	  { "latitude": 43.8625, "longitude": -78.7905 },
+	  { "latitude": 43.8590, "longitude": -78.7940 },
+	  { "latitude": 43.8580, "longitude": -78.7880 },
+	  { "latitude": 43.8630, "longitude": -78.7845 },
+	  { "latitude": 43.8660, "longitude": -78.7885 }
+	]
+  },
+  {
+	"id": "oshawa_trail_06",
+	"name": "Second Marsh Wildlife Area Trail",
+	"locationName": "Farewell St & Colonel Sam Dr, Oshawa",
+	"difficulty": "Easy",
+	"distanceKm": 2.5,
+	"elevationGainMeters": 15,
+	"estimatedDurationMinutes": 40,
+	"summary": "140-hectare provincially significant wetland loop with boardwalks, lookout blinds, and migratory bird watching.",
+	"startLatitude": 43.8685,
+	"startLongitude": -78.8075,
+	"coordinates": [
+	  { "latitude": 43.8685, "longitude": -78.8075 },
+	  { "latitude": 43.8660, "longitude": -78.8030 },
+	  { "latitude": 43.8635, "longitude": -78.7990 },
+	  { "latitude": 43.8655, "longitude": -78.7955 },
+	  { "latitude": 43.8690, "longitude": -78.8010 }
+	]
+  }
+]
