@@ -20,7 +20,7 @@ struct FeatureRow: View {
 				.font(.headline)
 				.foregroundColor(accent)
 				.frame(width: 36, height: 36)
-				.background(accent.opacity(0.12))
+				.background(.ultraThinMaterial)
 				.clipShape(Circle())
 			
 			VStack(alignment: .leading, spacing: 2) {

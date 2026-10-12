@@ -7,20 +7,53 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		518183503078781A00A5309C /* FeatureRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183443078781A00A5309C /* FeatureRow.swift */; };
+		518183513078781A00A5309C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183463078781A00A5309C /* AppDelegate.swift */; };
+		518183523078781A00A5309C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183483078781A00A5309C /* AuthView.swift */; };
+		518183533078781A00A5309C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183493078781A00A5309C /* ContentView.swift */; };
+		518183543078781A00A5309C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181834B3078781A00A5309C /* MainView.swift */; };
+		518183553078781A00A5309C /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181834C3078781A00A5309C /* Path.swift */; };
+		518183563078781A00A5309C /* TrailsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181834E3078781A00A5309C /* TrailsApp.swift */; };
+		518183573078781A00A5309C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 518183473078781A00A5309C /* Assets.xcassets */; };
+		518183583078781A00A5309C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5181834A3078781A00A5309C /* GoogleService-Info.plist */; };
+		5181835C3078786100A5309C /* Trail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181835B3078786100A5309C /* Trail.swift */; };
+		5181835E3078794F00A5309C /* WaypointMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181835D3078794F00A5309C /* WaypointMarker.swift */; };
+		5181836030787A1200A5309C /* HikeRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181835F30787A1200A5309C /* HikeRecord.swift */; };
+		5181836230787A9A00A5309C /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181836130787A9A00A5309C /* MockData.swift */; };
+		5181836530787CB500A5309C /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181836430787CB500A5309C /* AppState.swift */; };
+		518183673078817500A5309C /* TrailCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183663078817500A5309C /* TrailCardView.swift */; };
+		518183693078852000A5309C /* StatBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183683078852000A5309C /* StatBadge.swift */; };
+		5181836C3078898B00A5309C /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181836B3078898B00A5309C /* BottomSheetView.swift */; };
+		5181836E307892EC00A5309C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181836D307892EC00A5309C /* ProfileView.swift */; };
+		5181837030795ED600A5309C /* trails.json in Resources */ = {isa = PBXBuildFile; fileRef = 5181836F30795ECC00A5309C /* trails.json */; };
+		51818372307960E800A5309C /* TrailLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51818371307960E800A5309C /* TrailLoader.swift */; };
 		51C7EDE930773D5F00839070 /* FirebaseSignInWithApple in Frameworks */ = {isa = PBXBuildFile; productRef = 51C7EDE830773D5F00839070 /* FirebaseSignInWithApple */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		518183443078781A00A5309C /* FeatureRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureRow.swift; sourceTree = "<group>"; };
+		518183463078781A00A5309C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		518183473078781A00A5309C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		518183483078781A00A5309C /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		518183493078781A00A5309C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5181834A3078781A00A5309C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5181834B3078781A00A5309C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		5181834C3078781A00A5309C /* Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Path.swift; sourceTree = "<group>"; };
+		5181834D3078781A00A5309C /* Trails.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Trails.entitlements; sourceTree = "<group>"; };
+		5181834E3078781A00A5309C /* TrailsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailsApp.swift; sourceTree = "<group>"; };
+		5181835B3078786100A5309C /* Trail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trail.swift; sourceTree = "<group>"; };
+		5181835D3078794F00A5309C /* WaypointMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaypointMarker.swift; sourceTree = "<group>"; };
+		5181835F30787A1200A5309C /* HikeRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HikeRecord.swift; sourceTree = "<group>"; };
+		5181836130787A9A00A5309C /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
+		5181836430787CB500A5309C /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		518183663078817500A5309C /* TrailCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailCardView.swift; sourceTree = "<group>"; };
+		518183683078852000A5309C /* StatBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatBadge.swift; sourceTree = "<group>"; };
+		5181836B3078898B00A5309C /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
+		5181836D307892EC00A5309C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		5181836F30795ECC00A5309C /* trails.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = trails.json; sourceTree = "<group>"; };
+		51818371307960E800A5309C /* TrailLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailLoader.swift; sourceTree = "<group>"; };
 		5198850630771933004B4684 /* Trails.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trails.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		5198850830771933004B4684 /* Trails */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Trails;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		5198850330771933004B4684 /* Frameworks */ = {
@@ -32,10 +65,86 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		518183453078781A00A5309C /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				518183443078781A00A5309C /* FeatureRow.swift */,
+				518183663078817500A5309C /* TrailCardView.swift */,
+				518183683078852000A5309C /* StatBadge.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		5181834F3078781A00A5309C /* Trails */ = {
+			isa = PBXGroup;
+			children = (
+				5181834A3078781A00A5309C /* GoogleService-Info.plist */,
+				51818373307D35CE00A5309C /* App */,
+				5181835A3078782900A5309C /* Authentication */,
+				518183453078781A00A5309C /* Components */,
+				518183593078782100A5309C /* Model */,
+				5181836A3078897200A5309C /* View */,
+				5181836330787CA300A5309C /* ViewModel */,
+				518183473078781A00A5309C /* Assets.xcassets */,
+				5181834D3078781A00A5309C /* Trails.entitlements */,
+			);
+			path = Trails;
+			sourceTree = "<group>";
+		};
+		518183593078782100A5309C /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				5181835B3078786100A5309C /* Trail.swift */,
+				5181835D3078794F00A5309C /* WaypointMarker.swift */,
+				5181835F30787A1200A5309C /* HikeRecord.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		5181835A3078782900A5309C /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				518183463078781A00A5309C /* AppDelegate.swift */,
+				518183483078781A00A5309C /* AuthView.swift */,
+				5181834B3078781A00A5309C /* MainView.swift */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
+		5181836330787CA300A5309C /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				5181836430787CB500A5309C /* AppState.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		5181836A3078897200A5309C /* View */ = {
+			isa = PBXGroup;
+			children = (
+				5181836B3078898B00A5309C /* BottomSheetView.swift */,
+				518183493078781A00A5309C /* ContentView.swift */,
+				5181836D307892EC00A5309C /* ProfileView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		51818373307D35CE00A5309C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				5181834E3078781A00A5309C /* TrailsApp.swift */,
+				5181836130787A9A00A5309C /* MockData.swift */,
+				51818371307960E800A5309C /* TrailLoader.swift */,
+				5181834C3078781A00A5309C /* Path.swift */,
+				5181836F30795ECC00A5309C /* trails.json */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 		519884FD30771933004B4684 = {
 			isa = PBXGroup;
 			children = (
-				5198850830771933004B4684 /* Trails */,
+				5181834F3078781A00A5309C /* Trails */,
 				5198850730771933004B4684 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,9 +169,6 @@
 				5198850430771933004B4684 /* Resources */,
 			);
 			buildRules = (
-			);
-			fileSystemSynchronizedGroups = (
-				5198850830771933004B4684 /* Trails */,
 			);
 			name = Trails;
 			packageProductDependencies = (
@@ -113,6 +219,9 @@
 		5198850430771933004B4684 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				518183573078781A00A5309C /* Assets.xcassets in Resources */,
+				518183583078781A00A5309C /* GoogleService-Info.plist in Resources */,
+				5181837030795ED600A5309C /* trails.json in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
@@ -121,6 +230,23 @@
 		5198850230771933004B4684 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
+				518183673078817500A5309C /* TrailCardView.swift in Sources */,
+				518183503078781A00A5309C /* FeatureRow.swift in Sources */,
+				518183513078781A00A5309C /* AppDelegate.swift in Sources */,
+				5181835C3078786100A5309C /* Trail.swift in Sources */,
+				5181836C3078898B00A5309C /* BottomSheetView.swift in Sources */,
+				5181836530787CB500A5309C /* AppState.swift in Sources */,
+				518183523078781A00A5309C /* AuthView.swift in Sources */,
+				518183533078781A00A5309C /* ContentView.swift in Sources */,
+				5181836E307892EC00A5309C /* ProfileView.swift in Sources */,
+				5181836030787A1200A5309C /* HikeRecord.swift in Sources */,
+				518183543078781A00A5309C /* MainView.swift in Sources */,
+				518183553078781A00A5309C /* Path.swift in Sources */,
+				51818372307960E800A5309C /* TrailLoader.swift in Sources */,
+				518183563078781A00A5309C /* TrailsApp.swift in Sources */,
+				518183693078852000A5309C /* StatBadge.swift in Sources */,
+				5181836230787A9A00A5309C /* MockData.swift in Sources */,
+				5181835E3078794F00A5309C /* WaypointMarker.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

@@ -12,10 +12,12 @@ import FirebaseSignInWithApple
 struct TrailsApp: App {
 	
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+	@State private var appState = AppState()
 	
     var body: some Scene {
         WindowGroup {
             MainView()
+				.environment(appState)
 				.configureFirebaseSignInWithAppleWith(firestoreUserCollectionPath: Path.Firestore.profiles)
         }
     }

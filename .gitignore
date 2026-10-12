@@ -74,4 +74,5 @@ Carthage/Checkouts/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db
+Thumbs.dbGoogleService-Info.plist
+**/GoogleService-Info.plist

@@ -18,7 +18,7 @@ struct AuthView: View {
 			VStack(spacing: 16) {
 				ZStack {
 					Circle()
-						.fill(.accent.opacity(0.15))
+						.fill(.ultraThinMaterial)
 						.frame(width: 96, height: 96)
 					
 					Image(systemName: "figure.hiking")
