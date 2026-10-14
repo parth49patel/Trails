@@ -27,6 +27,8 @@
 		5181836E307892EC00A5309C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181836D307892EC00A5309C /* ProfileView.swift */; };
 		5181837030795ED600A5309C /* trails.json in Resources */ = {isa = PBXBuildFile; fileRef = 5181836F30795ECC00A5309C /* trails.json */; };
 		51818372307960E800A5309C /* TrailLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51818371307960E800A5309C /* TrailLoader.swift */; };
+		518183B0307ECCD000A5309C /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183AF307ECCD000A5309C /* LocationManager.swift */; };
+		518183B230800B2F00A5309C /* HikeTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183B130800B2F00A5309C /* HikeTrackingView.swift */; };
 		51C7EDE930773D5F00839070 /* FirebaseSignInWithApple in Frameworks */ = {isa = PBXBuildFile; productRef = 51C7EDE830773D5F00839070 /* FirebaseSignInWithApple */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +54,8 @@
 		5181836D307892EC00A5309C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		5181836F30795ECC00A5309C /* trails.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = trails.json; sourceTree = "<group>"; };
 		51818371307960E800A5309C /* TrailLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailLoader.swift; sourceTree = "<group>"; };
+		518183AF307ECCD000A5309C /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		518183B130800B2F00A5309C /* HikeTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HikeTrackingView.swift; sourceTree = "<group>"; };
 		5198850630771933004B4684 /* Trails.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trails.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -115,6 +119,7 @@
 			isa = PBXGroup;
 			children = (
 				5181836430787CB500A5309C /* AppState.swift */,
+				518183AF307ECCD000A5309C /* LocationManager.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -125,6 +130,7 @@
 				5181836B3078898B00A5309C /* BottomSheetView.swift */,
 				518183493078781A00A5309C /* ContentView.swift */,
 				5181836D307892EC00A5309C /* ProfileView.swift */,
+				518183B130800B2F00A5309C /* HikeTrackingView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -238,6 +244,7 @@
 				5181836530787CB500A5309C /* AppState.swift in Sources */,
 				518183523078781A00A5309C /* AuthView.swift in Sources */,
 				518183533078781A00A5309C /* ContentView.swift in Sources */,
+				518183B0307ECCD000A5309C /* LocationManager.swift in Sources */,
 				5181836E307892EC00A5309C /* ProfileView.swift in Sources */,
 				5181836030787A1200A5309C /* HikeRecord.swift in Sources */,
 				518183543078781A00A5309C /* MainView.swift in Sources */,
@@ -246,6 +253,7 @@
 				518183563078781A00A5309C /* TrailsApp.swift in Sources */,
 				518183693078852000A5309C /* StatBadge.swift in Sources */,
 				5181836230787A9A00A5309C /* MockData.swift in Sources */,
+				518183B230800B2F00A5309C /* HikeTrackingView.swift in Sources */,
 				5181835E3078794F00A5309C /* WaypointMarker.swift in Sources */,
 			);
 		};
@@ -384,6 +392,8 @@
 				DEVELOPMENT_TEAM = ARY55MH724;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Trails usesyour location to track your hiking route, distance, and live elevation.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Trails tracks your step count and walking cadence during hikes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -417,6 +427,8 @@
 				DEVELOPMENT_TEAM = ARY55MH724;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Trails usesyour location to track your hiking route, distance, and live elevation.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "Trails tracks your step count and walking cadence during hikes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
