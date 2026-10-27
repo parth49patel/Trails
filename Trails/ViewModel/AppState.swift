@@ -7,6 +7,8 @@
 
 import Foundation
 import CoreLocation
+import SwiftData
+import FirebaseAuth
 
 enum ActiveHikeStatus {
 	case idle
@@ -40,6 +42,8 @@ final class AppState {
 	let locationManager = LocationManager()
 	private var hikeTimer: Timer?
 	private var telemetryObservationTask: Task<Void, Never>?
+	
+	var modelContext: ModelContext?
 	
 	init() {
 		self.availableTrails = TrailLoader.loadBundledTrails()
@@ -95,6 +99,12 @@ final class AppState {
 		self.recordedWaypoints.removeAll()
 		self.hikeStatus = .active
 		
+		
+		// Audio announcement & milestone tracker reset
+		AudioService.shared.reset()
+		let trailTitle = trail?.name ?? "Free Roam"
+		AudioService.shared.speak("Starting \(trailTitle). Tracking your route.")
+		
 		// Reset and start GPS stream
 		locationManager.reset()
 		locationManager.startTracking()
@@ -109,6 +119,7 @@ final class AppState {
 		hikeStatus = .paused
 		stopTimer()
 		locationManager.pauseTracking()
+		AudioService.shared.speak("Hike paused.")
 	}
 	
 	func resumeHike() {
@@ -117,6 +128,7 @@ final class AppState {
 		startTimer()
 		locationManager.startTracking()
 		bindLocationTelemetry()
+		AudioService.shared.speak("Resume hike.")
 	}
 	
 	func endHike() {
@@ -127,7 +139,56 @@ final class AppState {
 	}
 	
 	func endAndSaveHike() {
+		guard isHikeActive else { return }
+				
+		let finalDistance = distanceMeters
+		let finalDuration = elapsedSeconds
+		let finalElevation = elevationGainMeters
+		let finalSteps = stepCount
+		let currentUserId = Auth.auth().currentUser?.uid ?? "local_guest"
+		let avgPace = finalDistance > 0 ? (Double(finalDuration) / (finalDistance / 1000.0)) : nil
+		let serializedCoords = userBreadcrumbs.map { [$0.latitude, $0.longitude] }
+		
+		// Audio completion prompt
+		let finalKmText = String(format: "%.1f", finalDistance / 1000.0)
+		AudioService.shared.speak("Hike finished. You completed \(finalKmText) kilometers. Great job!")
+		
+		// 1. Create SwiftData record
+		let record = HikeRecord(
+			userId: currentUserId,
+			trailId: selectedTrail?.id,
+			trailName: selectedTrail?.name ?? "Free Roam Hike",
+			distanceMeters: finalDistance,
+			durationSeconds: finalDuration,
+			elevationGainMeters: finalElevation,
+			stepCount: finalSteps,
+			averagePaceSecondsPerKm: avgPace,
+			date: Date(),
+			breadcrumbCoordinates: serializedCoords,
+			isSyncedToCloud: false
+		)
+		
+		// 2. Persist to local SwiftData
+		if let context = modelContext {
+			context.insert(record)
+			try? context.save()
+		}
+		
+		// 3. Reset telemetry state
 		endHike()
+		
+		// 4. Background cloud sync to Firestore
+		if Auth.auth().currentUser != nil {
+			Task {
+				do {
+					try await HikeDataService.shared.uploadHike(record)
+					record.isSyncedToCloud = true
+					try? self.modelContext?.save()
+				} catch {
+					print("⚠️ Cloud sync deferred: \(error.localizedDescription)")
+				}
+			}
+		}
 	}
 	
 	// MARK: - Private Helpers
@@ -150,6 +211,7 @@ final class AppState {
 			while !Task.isCancelled {
 				guard let self, self.hikeStatus == .active else { break }
 				
+				// Pull hardware readings from LocationManager
 				self.distanceMeters = self.locationManager.totalDistanceMeters
 				self.userBreadcrumbs = self.locationManager.breadcrumbs
 				self.currentPaceMinutesPerKm = self.locationManager.currentPaceMinPerKm ?? 0.0
@@ -157,8 +219,55 @@ final class AppState {
 				self.elevationGainMeters = self.locationManager.elevationGainMeters
 				self.stepCount = self.locationManager.liveSteps
 				
-				try? await Task.sleep(nanoseconds: 500_000_000)
+				// Evaluate audio milestone triggers
+				AudioService.shared.evaluateMilestone(
+					distanceMeters: self.distanceMeters,
+					formattedPace: self.formattedPace,
+					elevationGainMeters: self.elevationGainMeters
+				)
+				
+				try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s update cadence
 			}
+		}
+	}
+}
+
+
+// MARK: - Extension
+extension AppState {
+	func syncWithCloud() async {
+		guard let context = modelContext, Auth.auth().currentUser != nil else { return }
+		
+		do {
+			// 1. Fetch remote cloud records
+			let remoteHikes = try await HikeDataService.shared.fetchUserHikes()
+			
+			// 2. Fetch local records
+			let descriptor = FetchDescriptor<HikeRecord>()
+			let localHikes = (try? context.fetch(descriptor)) ?? []
+			let localHikeMap = Dictionary(uniqueKeysWithValues: localHikes.map { ($0.id, $0) })
+			
+			// Inbound Sync: Add missing cloud records to local SwiftData
+			for remote in remoteHikes {
+				if localHikeMap[remote.id] == nil {
+					context.insert(remote)
+				}
+			}
+			
+			// Outbound Sync: Upload local records that haven't reached cloud yet
+			for local in localHikes where !local.isSyncedToCloud {
+				do {
+					try await HikeDataService.shared.uploadHike(local)
+					local.isSyncedToCloud = true
+				} catch {
+					print("⚠️ Failed uploading unsynced local hike \(local.id): \(error.localizedDescription)")
+				}
+			}
+			
+			try? context.save()
+			print(" Cloud sync completed successfully.")
+		} catch {
+			print("⚠️ Cloud sync error: \(error.localizedDescription)")
 		}
 	}
 }

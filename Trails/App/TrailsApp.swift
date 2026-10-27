@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import FirebaseSignInWithApple
 
 @main
@@ -20,5 +21,6 @@ struct TrailsApp: App {
 				.environment(appState)
 				.configureFirebaseSignInWithAppleWith(firestoreUserCollectionPath: Path.Firestore.profiles)
         }
+		.modelContainer(for: [HikeRecord.self])
     }
 }

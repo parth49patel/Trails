@@ -7,10 +7,12 @@
 
 import SwiftUI
 import MapKit
+import SwiftData
 import FirebaseSignInWithApple
 
 struct ContentView: View {
 	@Environment(AppState.self) private var appState
+	@Environment(\.modelContext) private var modelContext
 	
 	@State private var cameraPosition: MapCameraPosition = .region(
 		MKCoordinateRegion(
@@ -55,6 +57,7 @@ struct ContentView: View {
 			.mapStyle(.standard(elevation: .realistic))
 			.ignoresSafeArea(.keyboard)
 			.onAppear {
+				appState.modelContext = modelContext
 				appState.locationManager.requestAuthorization()
 			}
 			
