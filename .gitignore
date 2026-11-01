@@ -2,7 +2,7 @@
 # 1. Firebase & Cloud Secrets (CRITICAL)
 # ==========================================
 # Firebase configuration containing project keys & client IDs
-GoogleService-Info.plist
+**/GoogleService-Info.plist
 *GoogleService-Info*.plist
 
 # Firebase / GCP service account private keys (if any backend/scripts are kept here)
