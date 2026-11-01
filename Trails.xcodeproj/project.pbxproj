@@ -35,6 +35,8 @@
 		518183B83081163D00A5309C /* HikeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183B73081163D00A5309C /* HikeDetailView.swift */; };
 		518183BB308124BE00A5309C /* AudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183BA308124BE00A5309C /* AudioService.swift */; };
 		51C7EDE930773D5F00839070 /* FirebaseSignInWithApple in Frameworks */ = {isa = PBXBuildFile; productRef = 51C7EDE830773D5F00839070 /* FirebaseSignInWithApple */; };
+		51CCFF273094C975002BEC8D /* VideoWaypoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CCFF263094C975002BEC8D /* VideoWaypoint.swift */; };
+		51CCFF293094CA72002BEC8D /* VideoCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CCFF283094CA72002BEC8D /* VideoCaptureView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +69,9 @@
 		518183B73081163D00A5309C /* HikeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HikeDetailView.swift; sourceTree = "<group>"; };
 		518183BA308124BE00A5309C /* AudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioService.swift; sourceTree = "<group>"; };
 		5198850630771933004B4684 /* Trails.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trails.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		51CCFF263094C975002BEC8D /* VideoWaypoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoWaypoint.swift; sourceTree = "<group>"; };
+		51CCFF283094CA72002BEC8D /* VideoCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCaptureView.swift; sourceTree = "<group>"; };
+		51CCFF2A3094E41F002BEC8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,9 +98,10 @@
 		5181834F3078781A00A5309C /* Trails */ = {
 			isa = PBXGroup;
 			children = (
+				51818373307D35CE00A5309C /* App */,
+				51CCFF2A3094E41F002BEC8D /* Info.plist */,
 				51046F05308854A500F51B65 /* TrailsIcon.icon */,
 				5181834A3078781A00A5309C /* GoogleService-Info.plist */,
-				51818373307D35CE00A5309C /* App */,
 				5181835A3078782900A5309C /* Authentication */,
 				518183453078781A00A5309C /* Components */,
 				518183593078782100A5309C /* Model */,
@@ -114,6 +120,7 @@
 				5181835B3078786100A5309C /* Trail.swift */,
 				5181835D3078794F00A5309C /* WaypointMarker.swift */,
 				5181835F30787A1200A5309C /* HikeRecord.swift */,
+				51CCFF263094C975002BEC8D /* VideoWaypoint.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -166,6 +173,7 @@
 			children = (
 				518183B330810DCA00A5309C /* HikeDataService.swift */,
 				518183BA308124BE00A5309C /* AudioService.swift */,
+				51CCFF283094CA72002BEC8D /* VideoCaptureView.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -270,12 +278,14 @@
 				5181836C3078898B00A5309C /* BottomSheetView.swift in Sources */,
 				5181836530787CB500A5309C /* AppState.swift in Sources */,
 				518183523078781A00A5309C /* AuthView.swift in Sources */,
+				51CCFF293094CA72002BEC8D /* VideoCaptureView.swift in Sources */,
 				518183533078781A00A5309C /* ContentView.swift in Sources */,
 				518183B0307ECCD000A5309C /* LocationManager.swift in Sources */,
 				5181836E307892EC00A5309C /* ProfileView.swift in Sources */,
 				5181836030787A1200A5309C /* HikeRecord.swift in Sources */,
 				518183543078781A00A5309C /* MainView.swift in Sources */,
 				518183553078781A00A5309C /* Path.swift in Sources */,
+				51CCFF273094C975002BEC8D /* VideoWaypoint.swift in Sources */,
 				51818372307960E800A5309C /* TrailLoader.swift in Sources */,
 				518183B6308114EC00A5309C /* HikeRowView.swift in Sources */,
 				518183563078781A00A5309C /* TrailsApp.swift in Sources */,
@@ -420,7 +430,12 @@
 				DEVELOPMENT_TEAM = ARY55MH724;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Trails/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Record scenic trail videos and memory pins along your route.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Trails usesyour location to track your hiking route, distance, and live elevation.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Capture ambient audio during trail memory recording.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "Trails tracks your step count and walking cadence during hikes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -455,7 +470,12 @@
 				DEVELOPMENT_TEAM = ARY55MH724;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Trails/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Record scenic trail videos and memory pins along your route.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Trails usesyour location to track your hiking route, distance, and live elevation.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Capture ambient audio during trail memory recording.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "Trails tracks your step count and walking cadence during hikes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

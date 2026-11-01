@@ -8,8 +8,7 @@
 import Foundation
 import CoreLocation
 
-
-struct CoordinatePoint: Codable, Hashable {
+struct CoordinatePoint: Codable, Hashable, Sendable {
 	let latitude: Double
 	let longitude: Double
 	
@@ -18,7 +17,7 @@ struct CoordinatePoint: Codable, Hashable {
 	}
 }
 
-struct Trail: Identifiable, Codable, Hashable {
+struct Trail: Identifiable, Codable, Hashable, Sendable {
 	let id: String
 	let name: String
 	let locationName: String
@@ -31,7 +30,6 @@ struct Trail: Identifiable, Codable, Hashable {
 	let startLongitude: Double
 	let coordinates: [CoordinatePoint]
 	
-	// Quick MapKit accessors
 	var startCoordinate: CLLocationCoordinate2D {
 		CLLocationCoordinate2D(latitude: startLatitude, longitude: startLongitude)
 	}
@@ -40,7 +38,7 @@ struct Trail: Identifiable, Codable, Hashable {
 		coordinates.map { $0.clCoordinate }
 	}
 	
-	enum Difficulty: String, CaseIterable, Codable {
+	enum Difficulty: String, CaseIterable, Codable, Sendable {
 		case easy = "Easy"
 		case moderate = "Moderate"
 		case hard = "Hard"
