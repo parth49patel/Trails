@@ -9,12 +9,11 @@ import SwiftUI
 import FirebaseSignInWithApple
 
 struct AuthView: View {
-	
-    var body: some View {
+	var body: some View {
 		VStack(spacing: 32) {
 			Spacer()
 			
-			// MARK: - Logo & App Title
+				// MARK: - Logo & App Title
 			VStack(spacing: 16) {
 				ZStack {
 					Circle()
@@ -30,39 +29,40 @@ struct AuthView: View {
 					Text("Trails")
 						.font(.system(.largeTitle, design: .rounded, weight: .bold))
 					
-					Text("Your Intelligent Outdoor Trail Companion")
+					Text("Your Outdoor Trail Companion")
 						.font(.subheadline)
 						.foregroundStyle(.secondary)
 				}
 			}
 			
-			// MARK: - Feature Overview
-			VStack(alignment: .leading, spacing: 14) {
+				// MARK: - Core Metrics Overview
+			VStack(alignment: .leading, spacing: 16) {
 				FeatureRow(
-					icon: "map.fill",
-					title: "Live GPS & Heading",
-					description: "Track your route and compass orientation on maps.",
-					accent: .accent
+					icon: "figure.walk",
+					title: "Steps & Distance",
+					description: "Monitor distance covered and real-time step count.",
+					accent: .green
 				)
 				
 				FeatureRow(
-					icon: "speaker.wave.2.fill",
-					title: "Hands-Free Audio",
-					description: "Hear automatic distance milestones while walking.",
-					accent: .accent
+					icon: "stopwatch.fill",
+					title: "Active Time",
+					description: "Accurately record your elapsed time on the trail.",
+					accent: .orange
 				)
 				
 				FeatureRow(
 					icon: "video.fill",
-					title: "Scenic Waypoint Clips",
-					description: "Record 10-second memories pinned to the trail.",
-					accent: .accent
+					title: "Pinned Memories",
+					description: "Capture and pin 10-second video clips to your hike.",
+					accent: .blue
 				)
 			}
+			.padding(.horizontal, 8)
 			
 			Spacer()
 			
-			// MARK: - Sign-In Action
+				// MARK: - Sign-In Action
 			VStack(spacing: 12) {
 				FirebaseSignInWithAppleButton {
 					FirebaseSignInWithAppleLabel(.signIn)
@@ -70,16 +70,16 @@ struct AuthView: View {
 				.frame(height: 50)
 				.clipShape(RoundedRectangle(cornerRadius: 12))
 				
-				Text("Sign in to sync your hikes and saved trail markers.")
+				Text("Sign in to personalize your hiking log.")
 					.font(.caption2)
-					.foregroundStyle(.tertiary)
+					.foregroundStyle(.secondary)
 					.multilineTextAlignment(.center)
 			}
 			.padding(.horizontal, 24)
 			.padding(.bottom, 16)
 		}
 		.padding()
-    }
+	}
 }
 
 #Preview {

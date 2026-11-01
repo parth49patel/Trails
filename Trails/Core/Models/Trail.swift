@@ -8,40 +8,19 @@
 import Foundation
 import CoreLocation
 
-struct CoordinatePoint: Codable, Hashable, Sendable {
-	let latitude: Double
-	let longitude: Double
-	
-	var clCoordinate: CLLocationCoordinate2D {
-		CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-	}
-}
-
+/// Represents a pre-stored trail template available for hiking sessions.
 struct Trail: Identifiable, Codable, Hashable, Sendable {
 	let id: String
 	let name: String
 	let locationName: String
-	let difficulty: Difficulty
 	let distanceKm: Double
-	let elevationGainMeters: Int
 	let estimatedDurationMinutes: Int
-	let summary: String
+	let estimatedSteps: Int
 	let startLatitude: Double
 	let startLongitude: Double
-	let coordinates: [CoordinatePoint]
 	
 	var startCoordinate: CLLocationCoordinate2D {
 		CLLocationCoordinate2D(latitude: startLatitude, longitude: startLongitude)
-	}
-	
-	var routeCoordinates: [CLLocationCoordinate2D] {
-		coordinates.map { $0.clCoordinate }
-	}
-	
-	enum Difficulty: String, CaseIterable, Codable, Sendable {
-		case easy = "Easy"
-		case moderate = "Moderate"
-		case hard = "Hard"
 	}
 	
 	func hash(into hasher: inout Hasher) {

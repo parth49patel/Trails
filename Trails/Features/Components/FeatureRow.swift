@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// A reusable row component for presenting key feature highlights with an SF Symbol icon.
 struct FeatureRow: View {
 	
 	let icon: String
@@ -18,7 +19,7 @@ struct FeatureRow: View {
 		HStack(alignment: .top, spacing: 14) {
 			Image(systemName: icon)
 				.font(.headline)
-				.foregroundColor(accent)
+				.foregroundStyle(accent)
 				.frame(width: 36, height: 36)
 				.background(.ultraThinMaterial)
 				.clipShape(Circle())

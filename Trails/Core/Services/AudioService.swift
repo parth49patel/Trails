@@ -8,6 +8,7 @@
 import Foundation
 import AVFoundation
 
+/// Handles speech synthesis cues for session lifecycle events and kilometer milestones.
 final class AudioService: NSObject {
 	static let shared = AudioService()
 	
@@ -22,7 +23,11 @@ final class AudioService: NSObject {
 	private func configureAudioSession() {
 		do {
 			let session = AVAudioSession.sharedInstance()
-			try session.setCategory(.playback, mode: .voicePrompt, options: [.duckOthers, .interruptSpokenAudioAndMixWithOthers])
+			try session.setCategory(
+				.playback,
+				mode: .voicePrompt,
+				options: [.duckOthers, .interruptSpokenAudioAndMixWithOthers]
+			)
 			try session.setActive(true)
 		} catch {
 			print("Failed to configure audio session: \(error.localizedDescription)")
@@ -43,16 +48,16 @@ final class AudioService: NSObject {
 			synthesizer.stopSpeaking(at: .immediate)
 		}
 	}
-
-	/// Checks if a distance milestone (e.g., every 500m or 1km) has been crossed
-	func evaluateMilestone(distanceMeters: Double, formattedPace: String, elevationGainMeters: Double) {
-		let currentKm = Int(distanceMeters / 1000.0) // Every 1,000 meters
+	
+	/// Evaluates if a distance milestone (every 1 km) has been reached.
+	func evaluateMilestone(distanceMeters: Double) {
+		let currentKm = Int(distanceMeters / 1000.0)
 		
-		// Announce when crossing into a new full kilometer
 		if currentKm > lastAnnouncedDistanceKm && currentKm > 0 {
 			lastAnnouncedDistanceKm = currentKm
 			
-			let message = "Milestone reached. You have completed \(currentKm) kilometer\(currentKm > 1 ? "s" : ""). Current pace is \(formattedPace) per kilometer."
+			let unit = currentKm == 1 ? "kilometer" : "kilometers"
+			let message = "Milestone reached. You have completed \(currentKm) \(unit)."
 			speak(message)
 		}
 	}
