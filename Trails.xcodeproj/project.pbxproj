@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		51041A613097A88B006AB82C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 51041A603097A88B006AB82C /* GoogleService-Info.plist */; };
+		51041A653097AE1F006AB82C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 51041A643097AE1F006AB82C /* Assets.xcassets */; };
 		518183503078781A00A5309C /* FeatureRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183443078781A00A5309C /* FeatureRow.swift */; };
 		518183513078781A00A5309C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183463078781A00A5309C /* AppDelegate.swift */; };
 		518183523078781A00A5309C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183483078781A00A5309C /* AuthView.swift */; };
@@ -14,8 +16,6 @@
 		518183543078781A00A5309C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181834B3078781A00A5309C /* MainView.swift */; };
 		518183553078781A00A5309C /* Path.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181834C3078781A00A5309C /* Path.swift */; };
 		518183563078781A00A5309C /* TrailsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181834E3078781A00A5309C /* TrailsApp.swift */; };
-		518183573078781A00A5309C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 518183473078781A00A5309C /* Assets.xcassets */; };
-		518183583078781A00A5309C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5181834A3078781A00A5309C /* GoogleService-Info.plist */; };
 		5181835C3078786100A5309C /* Trail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181835B3078786100A5309C /* Trail.swift */; };
 		5181835E3078794F00A5309C /* WaypointMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181835D3078794F00A5309C /* WaypointMarker.swift */; };
 		5181836030787A1200A5309C /* HikeRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5181835F30787A1200A5309C /* HikeRecord.swift */; };
@@ -31,12 +31,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		51041A603097A88B006AB82C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		51041A643097AE1F006AB82C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		518183443078781A00A5309C /* FeatureRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureRow.swift; sourceTree = "<group>"; };
 		518183463078781A00A5309C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		518183473078781A00A5309C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		518183483078781A00A5309C /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		518183493078781A00A5309C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		5181834A3078781A00A5309C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5181834B3078781A00A5309C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		5181834C3078781A00A5309C /* Path.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Path.swift; sourceTree = "<group>"; };
 		5181834D3078781A00A5309C /* Trails.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Trails.entitlements; sourceTree = "<group>"; };
@@ -78,14 +78,14 @@
 		5181834F3078781A00A5309C /* Trails */ = {
 			isa = PBXGroup;
 			children = (
-				5181834A3078781A00A5309C /* GoogleService-Info.plist */,
+				51041A643097AE1F006AB82C /* Assets.xcassets */,
+				51041A603097A88B006AB82C /* GoogleService-Info.plist */,
 				51818373307D35CE00A5309C /* App */,
 				5181835A3078782900A5309C /* Authentication */,
 				518183453078781A00A5309C /* Components */,
 				518183593078782100A5309C /* Model */,
 				5181836A3078897200A5309C /* View */,
 				5181836330787CA300A5309C /* ViewModel */,
-				518183473078781A00A5309C /* Assets.xcassets */,
 				5181834D3078781A00A5309C /* Trails.entitlements */,
 			);
 			path = Trails;
@@ -219,9 +219,9 @@
 		5198850430771933004B4684 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
-				518183573078781A00A5309C /* Assets.xcassets in Resources */,
-				518183583078781A00A5309C /* GoogleService-Info.plist in Resources */,
 				5181837030795ED600A5309C /* trails.json in Resources */,
+				51041A653097AE1F006AB82C /* Assets.xcassets in Resources */,
+				51041A613097A88B006AB82C /* GoogleService-Info.plist in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
