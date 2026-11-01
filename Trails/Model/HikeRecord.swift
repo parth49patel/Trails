@@ -24,11 +24,14 @@ final class HikeRecord {
 	
 	// Serialized coordinates stored as [[latitude, longitude]]
 	var breadcrumbCoordinates: [[Double]]
+	
+	// Serialized WaypointMarker array
+	var waypointsData: Data?
 	var isSyncedToCloud: Bool
 
 	init(
 		id: String = UUID().uuidString,
-		userId: String,
+		userId: String = "local_user",
 		trailId: String? = nil,
 		trailName: String,
 		distanceMeters: Double,
@@ -37,7 +40,8 @@ final class HikeRecord {
 		stepCount: Int,
 		averagePaceSecondsPerKm: Double? = nil,
 		date: Date = Date(),
-		breadcrumbCoordinates: [[Double]],
+		breadcrumbCoordinates: [[Double]] = [],
+		waypoints: [WaypointMarker] = [],
 		isSyncedToCloud: Bool = false
 	) {
 		self.id = id
@@ -52,9 +56,20 @@ final class HikeRecord {
 		self.date = date
 		self.breadcrumbCoordinates = breadcrumbCoordinates
 		self.isSyncedToCloud = isSyncedToCloud
+		self.waypointsData = try? JSONEncoder().encode(waypoints)
 	}
 	
-	// Computed helper for MapKit polylines
+	// Computed property that exposes [WaypointMarker] to your views
+	var waypoints: [WaypointMarker] {
+		get {
+			guard let data = waypointsData else { return [] }
+			return (try? JSONDecoder().decode([WaypointMarker].self, from: data)) ?? []
+		}
+		set {
+			waypointsData = try? JSONEncoder().encode(newValue)
+		}
+	}
+	
 	var routeCoordinates: [CLLocationCoordinate2D] {
 		breadcrumbCoordinates.compactMap { pair in
 			guard pair.count >= 2 else { return nil }

@@ -22,7 +22,7 @@ final class AppState {
 	
 	var availableTrails: [Trail] = []
 	
-	// MARK: -  Navigation & Sheet States
+	// MARK: - Navigation & Sheet States
 	var selectedTrail: Trail?
 	var isShowingProfile: Bool = false
 	var isShowingCamera: Bool = false
@@ -88,6 +88,40 @@ final class AppState {
 		stepCount.formatted()
 	}
 	
+	// MARK: - Video Waypoint Recording
+	func recordVideoWaypoint(sourceURL: URL) {
+		// Use userBreadcrumbs or the userLocation property on LocationManager
+		guard let coordinate = userBreadcrumbs.last ?? locationManager.userLocation?.coordinate else {
+			print("⚠️ No coordinate available to pin video.")
+			return
+		}
+		
+		let filename = "waypoint_\(UUID().uuidString).mp4"
+		let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+		let destURL = docs.appendingPathComponent(filename)
+		
+		do {
+			if FileManager.default.fileExists(atPath: destURL.path) {
+				try FileManager.default.removeItem(at: destURL)
+			}
+			try FileManager.default.copyItem(at: sourceURL, to: destURL)
+			
+			let newWaypoint = WaypointMarker(
+				latitude: coordinate.latitude,
+				longitude: coordinate.longitude,
+				videoFilename: filename,
+				recordedAt: Date(),
+				title: "Scenic Memory"
+			)
+			
+			recordedWaypoints.append(newWaypoint)
+			AudioService.shared.speak("Memory video pinned to route.")
+			print("✅ Pinned video waypoint: \(filename). Total waypoints: \(recordedWaypoints.count)")
+		} catch {
+			print("⚠️ Failed saving video locally: \(error.localizedDescription)")
+		}
+	}
+	
 	// MARK: - Hike Lifecycle Controls
 	func startHike(for trail: Trail? = nil) {
 		self.selectedTrail = trail
@@ -98,7 +132,6 @@ final class AppState {
 		self.userBreadcrumbs.removeAll()
 		self.recordedWaypoints.removeAll()
 		self.hikeStatus = .active
-		
 		
 		// Audio announcement & milestone tracker reset
 		AudioService.shared.reset()
@@ -140,20 +173,19 @@ final class AppState {
 	
 	func endAndSaveHike() {
 		guard isHikeActive else { return }
-				
+		
+		let currentUserId = Auth.auth().currentUser?.uid ?? "guest_user"
 		let finalDistance = distanceMeters
 		let finalDuration = elapsedSeconds
 		let finalElevation = elevationGainMeters
 		let finalSteps = stepCount
-		let currentUserId = Auth.auth().currentUser?.uid ?? "local_guest"
 		let avgPace = finalDistance > 0 ? (Double(finalDuration) / (finalDistance / 1000.0)) : nil
 		let serializedCoords = userBreadcrumbs.map { [$0.latitude, $0.longitude] }
+		let waypointsToSave = self.recordedWaypoints
 		
-		// Audio completion prompt
-		let finalKmText = String(format: "%.1f", finalDistance / 1000.0)
-		AudioService.shared.speak("Hike finished. You completed \(finalKmText) kilometers. Great job!")
+		AudioService.shared.speak("Hike complete. Great job!")
 		
-		// 1. Create SwiftData record
+		// 1. Create record with the local waypoints
 		let record = HikeRecord(
 			userId: currentUserId,
 			trailId: selectedTrail?.id,
@@ -165,30 +197,24 @@ final class AppState {
 			averagePaceSecondsPerKm: avgPace,
 			date: Date(),
 			breadcrumbCoordinates: serializedCoords,
+			waypoints: waypointsToSave,
 			isSyncedToCloud: false
 		)
 		
-		// 2. Persist to local SwiftData
+		// 2. Persist to SwiftData
 		if let context = modelContext {
 			context.insert(record)
-			try? context.save()
-		}
-		
-		// 3. Reset telemetry state
-		endHike()
-		
-		// 4. Background cloud sync to Firestore
-		if Auth.auth().currentUser != nil {
-			Task {
-				do {
-					try await HikeDataService.shared.uploadHike(record)
-					record.isSyncedToCloud = true
-					try? self.modelContext?.save()
-				} catch {
-					print("⚠️ Cloud sync deferred: \(error.localizedDescription)")
-				}
+			do {
+				try context.save()
+				print("✅ Successfully saved hike \(record.id) to SwiftData with \(record.waypoints.count) waypoints.")
+			} catch {
+				print("⚠️ Failed saving hike to SwiftData: \(error.localizedDescription)")
 			}
 		}
+		
+		// 3. Reset live session state
+		self.recordedWaypoints.removeAll()
+		endHike()
 	}
 	
 	// MARK: - Private Helpers
@@ -228,46 +254,6 @@ final class AppState {
 				
 				try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s update cadence
 			}
-		}
-	}
-}
-
-
-// MARK: - Extension
-extension AppState {
-	func syncWithCloud() async {
-		guard let context = modelContext, Auth.auth().currentUser != nil else { return }
-		
-		do {
-			// 1. Fetch remote cloud records
-			let remoteHikes = try await HikeDataService.shared.fetchUserHikes()
-			
-			// 2. Fetch local records
-			let descriptor = FetchDescriptor<HikeRecord>()
-			let localHikes = (try? context.fetch(descriptor)) ?? []
-			let localHikeMap = Dictionary(uniqueKeysWithValues: localHikes.map { ($0.id, $0) })
-			
-			// Inbound Sync: Add missing cloud records to local SwiftData
-			for remote in remoteHikes {
-				if localHikeMap[remote.id] == nil {
-					context.insert(remote)
-				}
-			}
-			
-			// Outbound Sync: Upload local records that haven't reached cloud yet
-			for local in localHikes where !local.isSyncedToCloud {
-				do {
-					try await HikeDataService.shared.uploadHike(local)
-					local.isSyncedToCloud = true
-				} catch {
-					print("⚠️ Failed uploading unsynced local hike \(local.id): \(error.localizedDescription)")
-				}
-			}
-			
-			try? context.save()
-			print(" Cloud sync completed successfully.")
-		} catch {
-			print("⚠️ Cloud sync error: \(error.localizedDescription)")
 		}
 	}
 }

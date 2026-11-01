@@ -44,6 +44,16 @@ struct HikeTrackingView: View {
 				// Controls
 				HStack(spacing: 8) {
 					Button {
+							appState.isShowingCamera = true
+					} label: {
+							Image(systemName: "video.fill")
+									.font(.system(size: 13, weight: .bold))
+									.foregroundStyle(.white)
+									.frame(width: 34, height: 34)
+									.background(Color.blue.gradient)
+									.clipShape(Circle())
+					}
+					Button {
 						withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
 							if appState.hikeStatus == .active {
 								appState.pauseHike()
@@ -137,6 +147,11 @@ struct HikeTrackingView: View {
 		   Button("Resume", role: .cancel) { }
 		} message: {
 		   Text("Your recorded path, distance (\(appState.formattedDistance)), and duration will be finalized.")
+		}
+		.fullScreenCover(isPresented: Bindable(appState).isShowingCamera) {
+			VideoCaptureView { recordedURL in
+					appState.recordVideoWaypoint(sourceURL: recordedURL)
+			}
 		}
 	}
 	

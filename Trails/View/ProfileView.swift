@@ -113,7 +113,7 @@ struct ProfileView: View {
 				triggerSync()
 			}
 			.refreshable {
-				await appState.syncWithCloud()
+				//await appState.syncWithCloud()
 			}
 		}
     }
@@ -121,7 +121,7 @@ struct ProfileView: View {
 	private func triggerSync() {
 		Task {
 			isSyncing = true
-			await appState.syncWithCloud()
+			//await appState.syncWithCloud()
 			isSyncing = false
 		}
 	}

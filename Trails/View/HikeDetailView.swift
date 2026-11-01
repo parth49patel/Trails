@@ -7,60 +7,58 @@
 
 import SwiftUI
 import MapKit
+import AVKit
 
 struct HikeDetailView: View {
 	let hike: HikeRecord
 	
 	@State private var cameraPosition: MapCameraPosition = .automatic
+	@State private var selectedWaypoint: WaypointMarker?
+	@State private var activePlayer: AVPlayer?
 	
 	var body: some View {
 		ScrollView {
 			VStack(spacing: 20) {
-				// MARK: - Recorded Trail Path Map
+					// MARK: - Map with Route & Waypoint Pins
 				Map(position: $cameraPosition) {
 					if !hike.routeCoordinates.isEmpty {
-						// The user's recorded breadcrumb path
 						MapPolyline(coordinates: hike.routeCoordinates)
 							.stroke(
 								Color.green.gradient,
-								style: StrokeStyle(
-									lineWidth: 5,
-									lineCap: .round,
-									lineJoin: .round
-								)
+								style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round)
 							)
-						
-						// Start point pin
-						if let start = hike.routeCoordinates.first {
-							Annotation("Start", coordinate: start) {
-								ZStack {
-									Circle()
-										.fill(Color.white)
-										.frame(width: 22, height: 22)
-										.shadow(radius: 3)
-									Circle()
-										.fill(Color.green)
-										.frame(width: 14, height: 14)
-									Image(systemName: "figure.walk")
-										.font(.system(size: 8, weight: .bold))
-										.foregroundStyle(.white)
-								}
-							}
+					}
+					
+					if let start = hike.routeCoordinates.first {
+						Annotation("Start", coordinate: start) {
+							Circle().fill(Color.green).frame(width: 14, height: 14)
+								.overlay(Circle().stroke(Color.white, lineWidth: 2))
 						}
-						
-						// Finish point pin
-						if let end = hike.routeCoordinates.last {
-							Annotation("Finish", coordinate: end) {
+					}
+					
+					if let end = hike.routeCoordinates.last {
+						Annotation("Finish", coordinate: end) {
+							Circle().fill(Color.red).frame(width: 14, height: 14)
+								.overlay(Circle().stroke(Color.white, lineWidth: 2))
+						}
+					}
+					
+						// Video Memory Pins
+					ForEach(hike.waypoints) { waypoint in
+						Annotation(waypoint.title, coordinate: waypoint.coordinate) {
+							Button {
+								playVideo(for: waypoint)
+							} label: {
 								ZStack {
 									Circle()
 										.fill(Color.white)
-										.frame(width: 22, height: 22)
-										.shadow(radius: 3)
+										.frame(width: 32, height: 32)
+										.shadow(radius: 4)
 									Circle()
-										.fill(Color.red)
-										.frame(width: 14, height: 14)
-									Image(systemName: "flag.fill")
-										.font(.system(size: 8, weight: .bold))
+										.fill(Color.blue)
+										.frame(width: 26, height: 26)
+									Image(systemName: "video.fill")
+										.font(.system(size: 11, weight: .bold))
 										.foregroundStyle(.white)
 								}
 							}
@@ -75,11 +73,38 @@ struct HikeDetailView: View {
 						.stroke(Color(.separator), lineWidth: 0.5)
 				)
 				.padding(.horizontal, 16)
-				.onAppear {
-					fitMapToRoute()
+				.onAppear { fitMapToRoute() }
+				
+					// MARK: - Selected Video Player
+				if let waypoint = selectedWaypoint, let player = activePlayer {
+					VStack(alignment: .leading, spacing: 8) {
+						HStack {
+							Label(waypoint.title, systemImage: "video.badge.waveform.fill")
+								.font(.headline)
+							Spacer()
+							Button {
+								player.pause()
+								self.selectedWaypoint = nil
+								self.activePlayer = nil
+							} label: {
+								Image(systemName: "xmark.circle.fill")
+									.font(.title3)
+									.foregroundStyle(.secondary)
+							}
+						}
+						
+						VideoPlayer(player: player)
+							.frame(height: 220)
+							.clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+							.onAppear { player.play() }
+					}
+					.padding(16)
+					.background(Color(.secondarySystemBackground))
+					.clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+					.padding(.horizontal, 16)
 				}
 				
-				// MARK: - Hike Summary Metrics
+					// MARK: - Metrics
 				VStack(spacing: 12) {
 					HStack(spacing: 12) {
 						metricTile(label: "DISTANCE", value: String(format: "%.2f km", hike.distanceKm), icon: "figure.hiking")
@@ -87,7 +112,7 @@ struct HikeDetailView: View {
 					}
 					HStack(spacing: 12) {
 						metricTile(label: "ELEV GAIN", value: String(format: "+%.0f m", hike.elevationGainMeters), icon: "arrow.up.right")
-						metricTile(label: "TOTAL STEPS", value: hike.stepCount.formatted(), icon: "shoeprints.fill")
+						metricTile(label: "MEMORIES", value: "\(hike.waypoints.count) pinned", icon: "video.fill")
 					}
 				}
 				.padding(.horizontal, 16)
@@ -98,30 +123,27 @@ struct HikeDetailView: View {
 		.navigationBarTitleDisplayMode(.inline)
 	}
 	
-	// MARK: - Auto-center and zoom to fit entire route
+	private func playVideo(for waypoint: WaypointMarker) {
+		guard let url = waypoint.localFileURL, FileManager.default.fileExists(atPath: url.path) else {
+			print("⚠️ Video file not found on disk.")
+			return
+		}
+		self.selectedWaypoint = waypoint
+		self.activePlayer = AVPlayer(url: url)
+	}
+	
 	private func fitMapToRoute() {
 		let coords = hike.routeCoordinates
 		guard !coords.isEmpty else { return }
-		
-		let latitudes = coords.map(\.latitude)
-		let longitudes = coords.map(\.longitude)
-		
-		let minLat = latitudes.min()!
-		let maxLat = latitudes.max()!
-		let minLon = longitudes.min()!
-		let maxLon = longitudes.max()!
-		
+		let lats = coords.map(\.latitude), lons = coords.map(\.longitude)
 		let center = CLLocationCoordinate2D(
-			latitude: (minLat + maxLat) / 2.0,
-			longitude: (minLon + maxLon) / 2.0
+			latitude: (lats.min()! + lats.max()!) / 2.0,
+			longitude: (lons.min()! + lons.max()!) / 2.0
 		)
-		
-		// Add 30% padding so route endpoints aren't cropped against the borders
 		let span = MKCoordinateSpan(
-			latitudeDelta: max((maxLat - minLat) * 1.35, 0.005),
-			longitudeDelta: max((maxLon - minLon) * 1.35, 0.005)
+			latitudeDelta: max((lats.max()! - lats.min()!) * 1.35, 0.005),
+			longitudeDelta: max((lons.max()! - lons.min()!) * 1.35, 0.005)
 		)
-		
 		cameraPosition = .region(MKCoordinateRegion(center: center, span: span))
 	}
 	
@@ -129,13 +151,10 @@ struct HikeDetailView: View {
 	private func metricTile(label: String, value: String, icon: String) -> some View {
 		VStack(alignment: .leading, spacing: 6) {
 			HStack(spacing: 4) {
-				Image(systemName: icon)
-					.font(.caption2.weight(.bold))
-				Text(label)
-					.font(.caption2.weight(.bold))
+				Image(systemName: icon).font(.caption2.weight(.bold))
+				Text(label).font(.caption2.weight(.bold))
 			}
 			.foregroundStyle(.secondary)
-			
 			Text(value)
 				.font(.system(.title3, design: .rounded, weight: .bold))
 				.monospacedDigit()
@@ -150,11 +169,7 @@ struct HikeDetailView: View {
 		let hours = seconds / 3600
 		let minutes = (seconds % 3600) / 60
 		let secs = seconds % 60
-		if hours > 0 {
-			return String(format: "%dh %02dm", hours, minutes)
-		} else {
-			return String(format: "%dm %02ds", minutes, secs)
-		}
+		return hours > 0 ? String(format: "%dh %02dm", hours, minutes) : String(format: "%dm %02ds", minutes, secs)
 	}
 }
 
