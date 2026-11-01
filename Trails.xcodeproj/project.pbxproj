@@ -97,7 +97,6 @@
 			isa = PBXGroup;
 			children = (
 				51CCFF2A3094E41F002BEC8D /* Info.plist */,
-				5181834A3078781A00A5309C /* GoogleService-Info.plist */,
 				5181834D3078781A00A5309C /* Trails.entitlements */,
 				51818373307D35CE00A5309C /* App */,
 				51CCFF2C30977462002BEC8D /* Resources */,
@@ -176,6 +175,7 @@
 		51CCFF2C30977462002BEC8D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5181834A3078781A00A5309C /* GoogleService-Info.plist */,
 				518183473078781A00A5309C /* Assets.xcassets */,
 				5181836F30795ECC00A5309C /* trails.json */,
 			);
