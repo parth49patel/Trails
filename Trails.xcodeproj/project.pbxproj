@@ -30,13 +30,12 @@
 		51818372307960E800A5309C /* TrailLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51818371307960E800A5309C /* TrailLoader.swift */; };
 		518183B0307ECCD000A5309C /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183AF307ECCD000A5309C /* LocationManager.swift */; };
 		518183B230800B2F00A5309C /* HikeTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183B130800B2F00A5309C /* HikeTrackingView.swift */; };
-		518183B430810DCA00A5309C /* HikeDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183B330810DCA00A5309C /* HikeDataService.swift */; };
 		518183B6308114EC00A5309C /* HikeRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183B5308114EC00A5309C /* HikeRowView.swift */; };
 		518183B83081163D00A5309C /* HikeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183B73081163D00A5309C /* HikeDetailView.swift */; };
 		518183BB308124BE00A5309C /* AudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518183BA308124BE00A5309C /* AudioService.swift */; };
 		51C7EDE930773D5F00839070 /* FirebaseSignInWithApple in Frameworks */ = {isa = PBXBuildFile; productRef = 51C7EDE830773D5F00839070 /* FirebaseSignInWithApple */; };
-		51CCFF273094C975002BEC8D /* VideoWaypoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CCFF263094C975002BEC8D /* VideoWaypoint.swift */; };
 		51CCFF293094CA72002BEC8D /* VideoCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CCFF283094CA72002BEC8D /* VideoCaptureView.swift */; };
+		51CCFF333097782D002BEC8D /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CCFF323097782D002BEC8D /* OnboardingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,14 +63,13 @@
 		51818371307960E800A5309C /* TrailLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailLoader.swift; sourceTree = "<group>"; };
 		518183AF307ECCD000A5309C /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		518183B130800B2F00A5309C /* HikeTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HikeTrackingView.swift; sourceTree = "<group>"; };
-		518183B330810DCA00A5309C /* HikeDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HikeDataService.swift; sourceTree = "<group>"; };
 		518183B5308114EC00A5309C /* HikeRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HikeRowView.swift; sourceTree = "<group>"; };
 		518183B73081163D00A5309C /* HikeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HikeDetailView.swift; sourceTree = "<group>"; };
 		518183BA308124BE00A5309C /* AudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioService.swift; sourceTree = "<group>"; };
 		5198850630771933004B4684 /* Trails.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Trails.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		51CCFF263094C975002BEC8D /* VideoWaypoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoWaypoint.swift; sourceTree = "<group>"; };
 		51CCFF283094CA72002BEC8D /* VideoCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCaptureView.swift; sourceTree = "<group>"; };
-		51CCFF2A3094E41F002BEC8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		51CCFF2A3094E41F002BEC8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		51CCFF323097782D002BEC8D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,62 +96,34 @@
 		5181834F3078781A00A5309C /* Trails */ = {
 			isa = PBXGroup;
 			children = (
-				51818373307D35CE00A5309C /* App */,
 				51CCFF2A3094E41F002BEC8D /* Info.plist */,
-				51046F05308854A500F51B65 /* TrailsIcon.icon */,
 				5181834A3078781A00A5309C /* GoogleService-Info.plist */,
-				5181835A3078782900A5309C /* Authentication */,
-				518183453078781A00A5309C /* Components */,
-				518183593078782100A5309C /* Model */,
-				5181836A3078897200A5309C /* View */,
-				5181836330787CA300A5309C /* ViewModel */,
-				518183B930811B2600A5309C /* Services */,
 				5181834D3078781A00A5309C /* Trails.entitlements */,
-				518183473078781A00A5309C /* Assets.xcassets */,
+				51818373307D35CE00A5309C /* App */,
+				51CCFF2C30977462002BEC8D /* Resources */,
+				51CCFF2D30977469002BEC8D /* Features */,
+				51CCFF2B30977455002BEC8D /* Core */,
 			);
 			path = Trails;
 			sourceTree = "<group>";
 		};
-		518183593078782100A5309C /* Model */ = {
+		518183593078782100A5309C /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				5181835B3078786100A5309C /* Trail.swift */,
 				5181835D3078794F00A5309C /* WaypointMarker.swift */,
 				5181835F30787A1200A5309C /* HikeRecord.swift */,
-				51CCFF263094C975002BEC8D /* VideoWaypoint.swift */,
 			);
-			path = Model;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		5181835A3078782900A5309C /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
-				518183463078781A00A5309C /* AppDelegate.swift */,
 				518183483078781A00A5309C /* AuthView.swift */,
-				5181834B3078781A00A5309C /* MainView.swift */,
+				518183463078781A00A5309C /* AppDelegate.swift */,
 			);
 			path = Authentication;
-			sourceTree = "<group>";
-		};
-		5181836330787CA300A5309C /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				5181836430787CB500A5309C /* AppState.swift */,
-				518183AF307ECCD000A5309C /* LocationManager.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		5181836A3078897200A5309C /* View */ = {
-			isa = PBXGroup;
-			children = (
-				5181836B3078898B00A5309C /* BottomSheetView.swift */,
-				518183493078781A00A5309C /* ContentView.swift */,
-				5181836D307892EC00A5309C /* ProfileView.swift */,
-				518183B130800B2F00A5309C /* HikeTrackingView.swift */,
-				518183B73081163D00A5309C /* HikeDetailView.swift */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		51818373307D35CE00A5309C /* App */ = {
@@ -161,9 +131,8 @@
 			children = (
 				5181834E3078781A00A5309C /* TrailsApp.swift */,
 				5181836130787A9A00A5309C /* MockData.swift */,
-				51818371307960E800A5309C /* TrailLoader.swift */,
+				51046F05308854A500F51B65 /* TrailsIcon.icon */,
 				5181834C3078781A00A5309C /* Path.swift */,
-				5181836F30795ECC00A5309C /* trails.json */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -171,9 +140,10 @@
 		518183B930811B2600A5309C /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				518183B330810DCA00A5309C /* HikeDataService.swift */,
+				51818371307960E800A5309C /* TrailLoader.swift */,
+				518183AF307ECCD000A5309C /* LocationManager.swift */,
+				5181836430787CB500A5309C /* AppState.swift */,
 				518183BA308124BE00A5309C /* AudioService.swift */,
-				51CCFF283094CA72002BEC8D /* VideoCaptureView.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -192,6 +162,65 @@
 				5198850630771933004B4684 /* Trails.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		51CCFF2B30977455002BEC8D /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				518183593078782100A5309C /* Models */,
+				518183B930811B2600A5309C /* Services */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		51CCFF2C30977462002BEC8D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				518183473078781A00A5309C /* Assets.xcassets */,
+				5181836F30795ECC00A5309C /* trails.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		51CCFF2D30977469002BEC8D /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				5181835A3078782900A5309C /* Authentication */,
+				518183453078781A00A5309C /* Components */,
+				51CCFF31309775D1002BEC8D /* Profile */,
+				51CCFF30309775C3002BEC8D /* ActiveTracking */,
+				51CCFF2E3097758B002BEC8D /* Main */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		51CCFF2E3097758B002BEC8D /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				5181834B3078781A00A5309C /* MainView.swift */,
+				5181836B3078898B00A5309C /* BottomSheetView.swift */,
+				518183493078781A00A5309C /* ContentView.swift */,
+				51CCFF323097782D002BEC8D /* OnboardingView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		51CCFF30309775C3002BEC8D /* ActiveTracking */ = {
+			isa = PBXGroup;
+			children = (
+				51CCFF283094CA72002BEC8D /* VideoCaptureView.swift */,
+				518183B130800B2F00A5309C /* HikeTrackingView.swift */,
+			);
+			path = ActiveTracking;
+			sourceTree = "<group>";
+		};
+		51CCFF31309775D1002BEC8D /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				5181836D307892EC00A5309C /* ProfileView.swift */,
+				518183B73081163D00A5309C /* HikeDetailView.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -274,7 +303,6 @@
 				518183BB308124BE00A5309C /* AudioService.swift in Sources */,
 				5181835C3078786100A5309C /* Trail.swift in Sources */,
 				518183B83081163D00A5309C /* HikeDetailView.swift in Sources */,
-				518183B430810DCA00A5309C /* HikeDataService.swift in Sources */,
 				5181836C3078898B00A5309C /* BottomSheetView.swift in Sources */,
 				5181836530787CB500A5309C /* AppState.swift in Sources */,
 				518183523078781A00A5309C /* AuthView.swift in Sources */,
@@ -285,12 +313,12 @@
 				5181836030787A1200A5309C /* HikeRecord.swift in Sources */,
 				518183543078781A00A5309C /* MainView.swift in Sources */,
 				518183553078781A00A5309C /* Path.swift in Sources */,
-				51CCFF273094C975002BEC8D /* VideoWaypoint.swift in Sources */,
 				51818372307960E800A5309C /* TrailLoader.swift in Sources */,
 				518183B6308114EC00A5309C /* HikeRowView.swift in Sources */,
 				518183563078781A00A5309C /* TrailsApp.swift in Sources */,
 				518183693078852000A5309C /* StatBadge.swift in Sources */,
 				5181836230787A9A00A5309C /* MockData.swift in Sources */,
+				51CCFF333097782D002BEC8D /* OnboardingView.swift in Sources */,
 				518183B230800B2F00A5309C /* HikeTrackingView.swift in Sources */,
 				5181835E3078794F00A5309C /* WaypointMarker.swift in Sources */,
 			);

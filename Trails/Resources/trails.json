@@ -1,0 +1,74 @@
+[
+	{
+		"id": "oshawa_trail_01",
+		"name": "Joseph Kolodzie Oshawa Creek Trail",
+		"locationName": "Oshawa Valley Botanical Gardens, Oshawa",
+		"distanceKm": 7.0,
+		"estimatedDurationMinutes": 90,
+		"estimatedSteps": 9200,
+		"startLatitude": 43.8998,
+		"startLongitude": -78.8679,
+		"endLatitude": 43.8522,
+		"endLongitude": -78.8475
+	},
+	{
+		"id": "oshawa_trail_02",
+		"name": "Harmony Creek Trail",
+		"locationName": "Donevan Recreation Complex, Oshawa",
+		"distanceKm": 4.0,
+		"estimatedDurationMinutes": 55,
+		"estimatedSteps": 5300,
+		"startLatitude": 43.9168,
+		"startLongitude": -78.8164,
+		"endLatitude": 43.8821,
+		"endLongitude": -78.8158
+	},
+	{
+		"id": "oshawa_trail_03",
+		"name": "Michael Starr Trail",
+		"locationName": "Cowan Park, Central Oshawa",
+		"distanceKm": 5.0,
+		"estimatedDurationMinutes": 65,
+		"estimatedSteps": 6600,
+		"startLatitude": 43.8962,
+		"startLongitude": -78.8532,
+		"endLatitude": 43.9212,
+		"endLongitude": -78.8456
+	},
+	{
+		"id": "oshawa_trail_04",
+		"name": "Oshawa Waterfront Trail",
+		"locationName": "Lakeview Park, Oshawa",
+		"distanceKm": 11.0,
+		"estimatedDurationMinutes": 140,
+		"estimatedSteps": 14500,
+		"startLatitude": 43.8521,
+		"startLongitude": -78.8482,
+		"endLatitude": 43.8672,
+		"endLongitude": -78.7828
+	},
+	{
+		"id": "oshawa_trail_05",
+		"name": "McLaughlin Bay Wildlife Reserve",
+		"locationName": "Colonel Sam Drive, South Oshawa",
+		"distanceKm": 7.0,
+		"estimatedDurationMinutes": 95,
+		"estimatedSteps": 9200,
+		"startLatitude": 43.8647,
+		"startLongitude": -78.7919,
+		"endLatitude": 43.8582,
+		"endLongitude": -78.7885
+	},
+	{
+		"id": "oshawa_trail_06",
+		"name": "Second Marsh Wildlife Area Trail",
+		"locationName": "Farewell St & Colonel Sam Dr, Oshawa",
+		"distanceKm": 2.5,
+		"estimatedDurationMinutes": 40,
+		"estimatedSteps": 3300,
+		"startLatitude": 43.8687,
+		"startLongitude": -78.8071,
+		"endLatitude": 43.8631,
+		"endLongitude": -78.7988
+	}
+]

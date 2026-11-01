@@ -8,9 +8,11 @@
 import SwiftUI
 import MapKit
 import SwiftData
-import FirebaseSignInWithApple
 
+/// The primary map interface orchestrating trail selection, active hike HUD presentation,
+/// and live pinned waypoint markers.
 struct ContentView: View {
+	
 	@Environment(AppState.self) private var appState
 	@Environment(\.modelContext) private var modelContext
 	
@@ -28,6 +30,7 @@ struct ContentView: View {
 			Map(position: $cameraPosition) {
 				UserAnnotation()
 				
+				// MARK: - Pre-stored Trail Start Anchors
 				ForEach(appState.availableTrails) { trail in
 					Annotation(trail.name, coordinate: trail.startCoordinate) {
 						Circle()
@@ -37,16 +40,22 @@ struct ContentView: View {
 							.shadow(radius: 2)
 							.scaleEffect(appState.selectedTrail?.id == trail.id ? 1.4 : 1.0)
 					}
-					
-					if appState.selectedTrail?.id == trail.id {
-						MapPolyline(coordinates: trail.routeCoordinates)
-							.stroke(Color.accentColor, lineWidth: 5)
-					}
 				}
 				
-				if !appState.userBreadcrumbs.isEmpty {
-					MapPolyline(coordinates: appState.userBreadcrumbs)
-						.stroke(Color.green, lineWidth: 5)
+				// MARK: - Live Pinned Memories (Waypoints)
+				ForEach(appState.recordedWaypoints) { waypoint in
+					Annotation(waypoint.title, coordinate: waypoint.coordinate) {
+						ZStack {
+							Circle()
+								.fill(Color.blue)
+								.frame(width: 28, height: 28)
+								.shadow(radius: 3)
+							
+							Image(systemName: "video.fill")
+								.font(.system(size: 12, weight: .bold))
+								.foregroundStyle(.white)
+						}
+					}
 				}
 			}
 			.mapControls {
@@ -61,7 +70,7 @@ struct ContentView: View {
 				appState.locationManager.requestAuthorization()
 			}
 			
-			// Active Hike HUD
+			// MARK: - Active Hike HUD
 			if appState.isHikeActive {
 				HikeTrackingView()
 					.padding(.horizontal, 16)
@@ -70,16 +79,14 @@ struct ContentView: View {
 					.zIndex(10)
 			}
 		}
-		// Observe hikeStatus so that ending a hike safely restores the bottom sheet
 		.onChange(of: appState.hikeStatus) { oldStatus, newStatus in
 			if oldStatus != .idle && newStatus == .idle {
-				showingBottomSheet = true
 				withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-					selectedDetent = .medium // Bring it back up to medium so it's clearly visible
+					showingBottomSheet = true
+					selectedDetent = .medium
 				}
 			}
 		}
-		// Persistent Exploration Sheet
 		.sheet(isPresented: $showingBottomSheet) {
 			BottomSheetView(
 				trails: appState.availableTrails,
@@ -98,7 +105,7 @@ struct ContentView: View {
 				onStartHike: { trail in
 					appState.startHike(for: trail)
 					withAnimation {
-						selectedDetent = .fraction(0.18)
+						showingBottomSheet = false
 						cameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
 					}
 				}

@@ -7,42 +7,44 @@
 
 import SwiftUI
 
+/// A card component displaying high-level metrics for a trail option
+/// and an action button to initiate the hike when selected.
 struct TrailCardView: View {
+	
 	let trail: Trail
 	let isSelected: Bool
 	let onSelect: () -> Void
 	let onStart: () -> Void
 	
-    var body: some View {
+	var body: some View {
 		VStack(alignment: .leading, spacing: 12) {
-			HStack(alignment: .top) {
-				VStack(alignment: .leading, spacing: 4) {
-					Text(trail.name)
-						.font(.headline)
-						.foregroundStyle(.primary)
-					
-					Text(trail.locationName)
-						.font(.subheadline)
-						.foregroundStyle(.secondary)
-				}
+			// MARK: - Header
+			VStack(alignment: .leading, spacing: 4) {
+				Text(trail.name)
+					.font(.headline)
+					.foregroundStyle(.primary)
+					.lineLimit(1)
 				
-				Spacer()
-				
-				Text(trail.difficulty.rawValue)
-					.font(.caption2.bold())
-					.padding(.horizontal, 8)
-					.padding(.vertical, 4)
-					.background(difficultyColor.opacity(0.15))
-					.foregroundStyle(difficultyColor)
-					.clipShape(Capsule())
+				Text(trail.locationName)
+					.font(.subheadline)
+					.foregroundStyle(.secondary)
+					.lineLimit(1)
 			}
+			.frame(maxWidth: .infinity, alignment: .leading)
 			
-			HStack(spacing: 16) {
+			// MARK: - Core Metrics Badges (Equal-Width Columns)
+			HStack(spacing: 8) {
 				StatBadge(icon: "ruler", label: String(format: "%.1f km", trail.distanceKm))
-				StatBadge(icon: "arrow.up.right", label: "\(trail.elevationGainMeters) m")
+					.frame(maxWidth: .infinity, alignment: .leading)
+				
 				StatBadge(icon: "clock", label: "\(trail.estimatedDurationMinutes) min")
+					.frame(maxWidth: .infinity, alignment: .leading)
+				
+				StatBadge(icon: "figure.walk", label: "\(trail.estimatedSteps.formatted())")
+					.frame(maxWidth: .infinity, alignment: .leading)
 			}
 			
+			// MARK: - Selection Action
 			if isSelected {
 				Button(action: onStart) {
 					HStack {
@@ -61,13 +63,14 @@ struct TrailCardView: View {
 			}
 		}
 		.padding(14)
+		.frame(maxWidth: .infinity, alignment: .leading)
 		.background(
-				RoundedRectangle(cornerRadius: 14)
-					.fill(Color(UIColor.secondarySystemGroupedBackground))
-					.overlay(
-						RoundedRectangle(cornerRadius: 14)
-							.stroke(isSelected ? .accent : Color.clear, lineWidth: 1.5)
-					)
+			RoundedRectangle(cornerRadius: 14)
+				.fill(Color(UIColor.secondarySystemGroupedBackground))
+				.overlay(
+					RoundedRectangle(cornerRadius: 14)
+						.stroke(isSelected ? .accent : Color.clear, lineWidth: 1.5)
+				)
 		)
 		.contentShape(Rectangle())
 		.onTapGesture {
@@ -75,17 +78,8 @@ struct TrailCardView: View {
 				onSelect()
 			}
 		}
-    }
-	
-	private var difficultyColor: Color {
-		switch trail.difficulty {
-			case .easy: return .green
-			case .moderate: return .orange
-			case .hard: return .red
-		}
 	}
 }
-
 #Preview {
 	VStack(spacing: 16) {
 			// Unselected state

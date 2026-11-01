@@ -22,26 +22,23 @@ final class AppState {
 	
 	var availableTrails: [Trail] = []
 	
-	// MARK: - Navigation & Sheet States
+	// MARK: - Navigation & Presentation States
 	var selectedTrail: Trail?
 	var isShowingProfile: Bool = false
 	var isShowingCamera: Bool = false
 	
-	// MARK: - Active Hike Status & Telemetry
+	// MARK: - Active Hike Telemetry (Core 4 Metrics)
 	var hikeStatus: ActiveHikeStatus = .idle
 	var elapsedSeconds: Int = 0
 	var distanceMeters: Double = 0.0
-	var currentPaceMinutesPerKm: Double = 0.0
 	var stepCount: Int = 0
-	var currentAltitudeMeters: Double = 0.0
-	var elevationGainMeters: Double = 0.0
-	var userBreadcrumbs: [CLLocationCoordinate2D] = []
 	var recordedWaypoints: [WaypointMarker] = []
 	
-	// MARK: - Services & Timers
+	// MARK: - Location & Timing Services
 	let locationManager = LocationManager()
 	private var hikeTimer: Timer?
 	private var telemetryObservationTask: Task<Void, Never>?
+	private var sessionStartCoordinate: CLLocationCoordinate2D?
 	
 	var modelContext: ModelContext?
 	
@@ -49,7 +46,7 @@ final class AppState {
 		self.availableTrails = TrailLoader.loadBundledTrails()
 	}
 	
-	// MARK: - UI Helpers
+	// MARK: - UI Presentation Helpers
 	var isHikeActive: Bool {
 		hikeStatus == .active || hikeStatus == .paused
 	}
@@ -69,35 +66,21 @@ final class AppState {
 		String(format: "%.2f km", distanceMeters / 1000.0)
 	}
 	
-	var formattedPace: String {
-		guard currentPaceMinutesPerKm > 0 && currentPaceMinutesPerKm < 60 else { return "--:--" }
-		let mins = Int(currentPaceMinutesPerKm)
-		let secs = Int((currentPaceMinutesPerKm - Double(mins)) * 60)
-		return String(format: "%d'%02d\"", mins, secs)
-	}
-	
-	var formattedAltitude: String {
-		String(format: "%.0f m", currentAltitudeMeters)
-	}
-
-	var formattedElevationGain: String {
-		String(format: "+%.0f m", elevationGainMeters)
-	}
-
 	var formattedSteps: String {
 		stepCount.formatted()
 	}
 	
 	// MARK: - Video Waypoint Recording
 	func recordVideoWaypoint(sourceURL: URL) {
-		// Use userBreadcrumbs or the userLocation property on LocationManager
-		guard let coordinate = userBreadcrumbs.last ?? locationManager.userLocation?.coordinate else {
+		guard let coordinate = locationManager.userLocation?.coordinate else {
 			print("⚠️ No coordinate available to pin video.")
 			return
 		}
 		
 		let filename = "waypoint_\(UUID().uuidString).mp4"
-		let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+		guard let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+			return
+		}
 		let destURL = docs.appendingPathComponent(filename)
 		
 		do {
@@ -113,36 +96,28 @@ final class AppState {
 				recordedAt: Date(),
 				title: "Scenic Memory"
 			)
-			
 			recordedWaypoints.append(newWaypoint)
-			AudioService.shared.speak("Memory video pinned to route.")
 			print("✅ Pinned video waypoint: \(filename). Total waypoints: \(recordedWaypoints.count)")
 		} catch {
 			print("⚠️ Failed saving video locally: \(error.localizedDescription)")
 		}
 	}
 	
-	// MARK: - Hike Lifecycle Controls
+	// MARK: - Hike Session Lifecycle
 	func startHike(for trail: Trail? = nil) {
 		self.selectedTrail = trail
 		self.elapsedSeconds = 0
 		self.distanceMeters = 0.0
-		self.currentPaceMinutesPerKm = 0.0
 		self.stepCount = 0
-		self.userBreadcrumbs.removeAll()
 		self.recordedWaypoints.removeAll()
 		self.hikeStatus = .active
 		
-		// Audio announcement & milestone tracker reset
-		AudioService.shared.reset()
-		let trailTitle = trail?.name ?? "Free Roam"
-		AudioService.shared.speak("Starting \(trailTitle). Tracking your route.")
+		// Capture start anchor (selected trail coordinate, or immediate user GPS fix)
+		self.sessionStartCoordinate = trail?.startCoordinate ?? locationManager.userLocation?.coordinate
 		
-		// Reset and start GPS stream
 		locationManager.reset()
 		locationManager.startTracking()
 		
-		// Start Live Sync & Timer
 		startTimer()
 		bindLocationTelemetry()
 	}
@@ -152,7 +127,6 @@ final class AppState {
 		hikeStatus = .paused
 		stopTimer()
 		locationManager.pauseTracking()
-		AudioService.shared.speak("Hike paused.")
 	}
 	
 	func resumeHike() {
@@ -161,7 +135,6 @@ final class AppState {
 		startTimer()
 		locationManager.startTracking()
 		bindLocationTelemetry()
-		AudioService.shared.speak("Resume hike.")
 	}
 	
 	func endHike() {
@@ -174,50 +147,42 @@ final class AppState {
 	func endAndSaveHike() {
 		guard isHikeActive else { return }
 		
-		let currentUserId = Auth.auth().currentUser?.uid ?? "guest_user"
+		let currentUserId = Auth.auth().currentUser?.uid ?? "local_user"
 		let finalDistance = distanceMeters
 		let finalDuration = elapsedSeconds
-		let finalElevation = elevationGainMeters
 		let finalSteps = stepCount
-		let avgPace = finalDistance > 0 ? (Double(finalDuration) / (finalDistance / 1000.0)) : nil
-		let serializedCoords = userBreadcrumbs.map { [$0.latitude, $0.longitude] }
 		let waypointsToSave = self.recordedWaypoints
 		
-		AudioService.shared.speak("Hike complete. Great job!")
+		// Final coordinate reading from LocationManager
+		let finishCoord = locationManager.userLocation?.coordinate
+		let startCoord = self.sessionStartCoordinate ?? finishCoord
 		
-		// 1. Create record with the local waypoints
 		let record = HikeRecord(
 			userId: currentUserId,
 			trailId: selectedTrail?.id,
 			trailName: selectedTrail?.name ?? "Free Roam Hike",
 			distanceMeters: finalDistance,
 			durationSeconds: finalDuration,
-			elevationGainMeters: finalElevation,
 			stepCount: finalSteps,
-			averagePaceSecondsPerKm: avgPace,
 			date: Date(),
-			breadcrumbCoordinates: serializedCoords,
-			waypoints: waypointsToSave,
-			isSyncedToCloud: false
+			startLatitude: startCoord?.latitude,
+			startLongitude: startCoord?.longitude,
+			finishLatitude: finishCoord?.latitude,
+			finishLongitude: finishCoord?.longitude,
+			waypoints: waypointsToSave
 		)
 		
-		// 2. Persist to SwiftData
 		if let context = modelContext {
 			context.insert(record)
-			do {
-				try context.save()
-				print("✅ Successfully saved hike \(record.id) to SwiftData with \(record.waypoints.count) waypoints.")
-			} catch {
-				print("⚠️ Failed saving hike to SwiftData: \(error.localizedDescription)")
-			}
+			try? context.save()
 		}
 		
-		// 3. Reset live session state
+		self.sessionStartCoordinate = nil
 		self.recordedWaypoints.removeAll()
 		endHike()
 	}
 	
-	// MARK: - Private Helpers
+	// MARK: - Private Session Helpers
 	private func startTimer() {
 		hikeTimer?.invalidate()
 		hikeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
@@ -237,20 +202,9 @@ final class AppState {
 			while !Task.isCancelled {
 				guard let self, self.hikeStatus == .active else { break }
 				
-				// Pull hardware readings from LocationManager
+				// Pull hardware readings for core metrics
 				self.distanceMeters = self.locationManager.totalDistanceMeters
-				self.userBreadcrumbs = self.locationManager.breadcrumbs
-				self.currentPaceMinutesPerKm = self.locationManager.currentPaceMinPerKm ?? 0.0
-				self.currentAltitudeMeters = self.locationManager.currentAltitudeMeters
-				self.elevationGainMeters = self.locationManager.elevationGainMeters
 				self.stepCount = self.locationManager.liveSteps
-				
-				// Evaluate audio milestone triggers
-				AudioService.shared.evaluateMilestone(
-					distanceMeters: self.distanceMeters,
-					formattedPace: self.formattedPace,
-					elevationGainMeters: self.elevationGainMeters
-				)
 				
 				try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s update cadence
 			}

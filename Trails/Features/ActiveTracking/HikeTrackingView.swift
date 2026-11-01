@@ -7,7 +7,10 @@
 
 import SwiftUI
 
+/// Heads-Up Display (HUD) overlay rendering active session controls and live telemetry
+/// for the 4 core metrics: elapsed time, distance covered, step count, and pinned memories.
 struct HikeTrackingView: View {
+	
 	@Environment(AppState.self) private var appState
 	@State private var showingEndConfirmation: Bool = false
 	
@@ -41,18 +44,21 @@ struct HikeTrackingView: View {
 				
 				Spacer(minLength: 8)
 				
-				// Controls
+				// MARK: - Active Controls
 				HStack(spacing: 8) {
+					// Pin Video Memory Button
 					Button {
-							appState.isShowingCamera = true
+						appState.isShowingCamera = true
 					} label: {
-							Image(systemName: "video.fill")
-									.font(.system(size: 13, weight: .bold))
-									.foregroundStyle(.white)
-									.frame(width: 34, height: 34)
-									.background(Color.blue.gradient)
-									.clipShape(Circle())
+						Image(systemName: "video.fill")
+							.font(.system(size: 13, weight: .bold))
+							.foregroundStyle(.white)
+							.frame(width: 34, height: 34)
+							.background(Color.blue.gradient)
+							.clipShape(Circle())
 					}
+					
+					// Pause / Resume Toggle
 					Button {
 						withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
 							if appState.hikeStatus == .active {
@@ -68,12 +74,13 @@ struct HikeTrackingView: View {
 							.frame(width: 34, height: 34)
 							.background(
 								appState.hikeStatus == .paused
-									? Color.blue.gradient
-									: Color.orange.gradient
+								? Color.blue.gradient
+								: Color.orange.gradient
 							)
 							.clipShape(Circle())
 					}
 					
+					// End Hike Action
 					Button {
 						showingEndConfirmation = true
 					} label: {
@@ -90,42 +97,31 @@ struct HikeTrackingView: View {
 			Divider()
 				.background(Color.white.opacity(0.15))
 			
-			// MARK: - Secondary Environmental & Sensor Telemetry
+			// MARK: - Core Telemetry Row (Steps & Pinned Memories)
 			HStack(spacing: 0) {
-				// Pace
-				telemetryItem(
-					label: "PACE",
-					value: appState.formattedPace,
-					icon: "speedometer"
-				)
-				
-				Spacer()
-				
-				// Current Altitude
-				telemetryItem(
-					label: "ELEV",
-					value: appState.formattedAltitude,
-					icon: "mountain.2.fill"
-				)
-				
-				Spacer()
-				
-				// Elevation Gain
-				telemetryItem(
-					label: "GAIN",
-					value: appState.formattedElevationGain,
-					icon: "arrow.up.right"
-				)
-				
-				Spacer()
-				
-				// Steps
 				telemetryItem(
 					label: "STEPS",
 					value: appState.formattedSteps,
-					icon: "shoeprints.fill"
+					icon: "figure.walk"
+				)
+				
+				Spacer()
+				
+				telemetryItem(
+					label: "MEMORIES",
+					value: "\(appState.recordedWaypoints.count)",
+					icon: "video.fill"
+				)
+				
+				Spacer()
+				
+				telemetryItem(
+					label: "STATUS",
+					value: appState.hikeStatus == .paused ? "Paused" : "Recording",
+					icon: "record.circle"
 				)
 			}
+			.padding(.horizontal, 8)
 		}
 		.padding(.horizontal, 16)
 		.padding(.vertical, 12)
@@ -143,19 +139,19 @@ struct HikeTrackingView: View {
 		) {
 			Button("End & Save Hike", role: .destructive) {
 				appState.endAndSaveHike()
-		   }
-		   Button("Resume", role: .cancel) { }
+			}
+			Button("Resume", role: .cancel) { }
 		} message: {
-		   Text("Your recorded path, distance (\(appState.formattedDistance)), and duration will be finalized.")
+			Text("Your distance (\(appState.formattedDistance)), duration (\(appState.formattedDuration)), and \(appState.recordedWaypoints.count) pinned memories will be saved.")
 		}
 		.fullScreenCover(isPresented: Bindable(appState).isShowingCamera) {
 			VideoCaptureView { recordedURL in
-					appState.recordVideoWaypoint(sourceURL: recordedURL)
+				appState.recordVideoWaypoint(sourceURL: recordedURL)
 			}
 		}
 	}
 	
-	// Sub-component for individual sensor readouts
+	// MARK: - Telemetry Item Subview
 	@ViewBuilder
 	private func telemetryItem(label: String, value: String, icon: String) -> some View {
 		VStack(spacing: 2) {

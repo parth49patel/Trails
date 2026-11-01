@@ -9,38 +9,40 @@ import SwiftUI
 import SwiftData
 import FirebaseSignInWithApple
 
+/// Displays user profile details, cumulative activity metrics, hike history, and account controls.
 struct ProfileView: View {
 	
 	@Environment(AppState.self) private var appState
 	@Environment(\.dismiss) private var dismiss
 	@Environment(\.modelContext) private var modelContext
 	@Query(sort: \HikeRecord.date, order: .reverse) private var hikes: [HikeRecord]
-    
-	@State private var isSyncing: Bool = false
 	
+	// MARK: - Cumulative Core Metrics
 	private var totalDistanceKm: Double {
 		hikes.reduce(0.0) { $0 + $1.distanceKm }
 	}
 	
-	private var totalElevationGain: Double {
-		hikes.reduce(0.0) { $0 + $1.elevationGainMeters }
+	private var totalSteps: Int {
+		hikes.reduce(0) { $0 + $1.stepCount }
 	}
 	
 	var body: some View {
 		NavigationStack {
 			List {
+				// MARK: - Lifetime Summary
 				Section("Lifetime") {
 					HStack {
 						statCell(title: "HIKES", value: "\(hikes.count)")
 						Spacer()
 						statCell(title: "DISTANCE", value: String(format: "%.1f km", totalDistanceKm))
 						Spacer()
-						statCell(title: "ELEVATION", value: String(format: "+%.0f m", totalElevationGain))
+						statCell(title: "STEPS", value: totalSteps.formatted())
 					}
 					.padding(.vertical, 6)
 				}
 				
-				Section {
+				// MARK: - Local Hike History
+				Section("Hike History") {
 					if hikes.isEmpty {
 						VStack(spacing: 8) {
 							Image(systemName: "figure.hiking")
@@ -69,17 +71,9 @@ struct ProfileView: View {
 							}
 						}
 					}
-				} header: {
-					HStack {
-						Text("Hike History")
-						Spacer()
-						if isSyncing {
-							ProgressView()
-								.controlSize(.small)
-						}
-					}
 				}
 				
+				// MARK: - Account Management
 				Section("Account") {
 					FirebaseSignOutWithAppleButton {
 						Label("Sign Out", systemImage: "power")
@@ -100,47 +94,21 @@ struct ProfileView: View {
 						dismiss()
 					}
 				}
-				ToolbarItem(placement: .topBarLeading) {
-					Button {
-						triggerSync()
-					} label: {
-						Image(systemName: "arrow.triangle.2.circlepath")
-					}
-					.disabled(isSyncing)
-				}
 			}
-			.task {
-				triggerSync()
-			}
-			.refreshable {
-				//await appState.syncWithCloud()
-			}
-		}
-    }
-	
-	private func triggerSync() {
-		Task {
-			isSyncing = true
-			//await appState.syncWithCloud()
-			isSyncing = false
 		}
 	}
 	
+	// MARK: - Persistence Actions
 	private func deleteSingleHike(_ hike: HikeRecord) {
-		let hikeId = hike.id
-		
 		modelContext.delete(hike)
-		try? modelContext.save()
-		
-		Task {
-			do {
-				try await HikeDataService.shared.deleteHike(id: hikeId)
-			} catch {
-				print("Failed to delete rempte hike: \(error.localizedDescription)")
-			}
+		do {
+			try modelContext.save()
+		} catch {
+			print("Failed to delete hike from SwiftData: \(error.localizedDescription)")
 		}
 	}
 	
+	// MARK: - UI Helpers
 	@ViewBuilder
 	private func statCell(title: String, value: String) -> some View {
 		VStack(alignment: .leading, spacing: 4) {

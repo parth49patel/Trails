@@ -7,7 +7,9 @@
 
 import SwiftUI
 
+/// A compact badge pairing an SF Symbol icon with a concise telemetry metric or label.
 struct StatBadge: View {
+	
 	let icon: String
 	let label: String
 	
