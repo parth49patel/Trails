@@ -2,22 +2,31 @@
 //  MainView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-07.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 import FirebaseSignInWithApple
 
-/// The root router view handling top-level authentication state switching and initial onboarding.
+/// The root presentation router for the Trails application.
 ///
-/// Directs authenticated users through the hardware permission onboarding on their first session,
-/// navigates to `ContentView` once complete, displays `AuthView` when unauthenticated,
-/// and presents a loading indicator during auth transitions.
+/// Observes Firebase Authentication state and local onboarding flags to resolve the top-level
+/// scene hierarchy:
+/// - `.loading` / `.authenticating`: Displays an indeterminate `ProgressView` spinner.
+/// - `.notAuthenticated`: Routes to `AuthView` for Sign in with Apple.
+/// - `.authenticated`: Directs first-time sessions through `OnboardingView` for hardware
+///   permission handshakes, or mounts `ContentView` for standard navigation.
 struct MainView: View {
 	
+	// MARK: - Dependencies & Storage
+
+	/// Bridges authentication state from the `FirebaseSignInWithApple` environment container.
 	@Environment(\.firebaseSignInWithApple) private var firebaseSignInWithApple
-	@AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
 	
+	/// Persisted user default tracking whether hardware permission onboarding has completed.
+	@AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
+		
 	var body: some View {
 		Group {
 			switch firebaseSignInWithApple.state {
@@ -43,5 +52,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+	MainView()
 }

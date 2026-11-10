@@ -2,24 +2,38 @@
 //  BottomSheetView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-08.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 
-/// Presents the bottom sheet interface for browsing curated trails and initiating hikes.
+/// Presents the primary bottom sheet interface for discovering trails and initiating tracking sessions.
 ///
-/// Provides a quick action to begin an unguided "Free Roam" hike or select
-/// from available pre-stored trails, each displaying the 4 core metrics.
+/// Serves two distinct exploration workflows:
+/// - **Curated Routes:** Renders a vertically scrollable catalog of pre-mapped trails via `TrailCardView`.
+/// - **Free Roam:** Quick-action button enabling unguided tracking without a predefined route boundary.
 struct BottomSheetView: View {
 	
+	// MARK: - Properties
+
+	/// Curated collection of nearby trails available for exploration.
 	let trails: [Trail]
+	
+	/// The currently highlighted trail, matching map viewport selections.
 	let selectedTrail: Trail?
+	
+	/// Callback triggered when a user taps a trail card to synchronize map camera bounds.
 	let onSelectTrail: (Trail) -> Void
+	
+	/// Callback triggered to initiate live tracking (`nil` indicates an open Free Roam session).
 	let onStartHike: (Trail?) -> Void
 	
+	// MARK: - State
+
+	/// Controls the presentation of the modal lifetime profile and history sheet.
 	@State private var showProfileView = false
-	
+		
 	var body: some View {
 		NavigationStack {
 			ScrollView {
@@ -40,7 +54,7 @@ struct BottomSheetView: View {
 			.navigationSubtitle("\(trails.count) nearby routes")
 			.toolbarTitleDisplayMode(.inline)
 			.toolbar {
-				// MARK: - Free Roam Action in Toolbar
+				// MARK: - Free Roam Action
 				ToolbarItem(placement: .topBarLeading) {
 					Button {
 						onStartHike(nil)
@@ -53,7 +67,7 @@ struct BottomSheetView: View {
 					.clipShape(Capsule())
 				}
 				
-				// MARK: - Profile Action
+				// MARK: - Profile Navigation
 				ToolbarItem(placement: .topBarTrailing) {
 					Button {
 						showProfileView = true
@@ -71,12 +85,12 @@ struct BottomSheetView: View {
 }
 
 #Preview {
-   NavigationStack {
-    	BottomSheetView(
+	NavigationStack {
+		BottomSheetView(
 			trails: MockData.sampleTrails,
 			selectedTrail: MockData.sampleTrails.first,
 			onSelectTrail: { _ in },
-			onStartHike: { _ in },
+			onStartHike: { _ in }
 		)
-    }
+	}
 }

@@ -2,7 +2,8 @@
 //  OnboardingView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-11-01.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
@@ -10,24 +11,40 @@ import CoreLocation
 import CoreMotion
 import AVFoundation
 
-/// Minimal onboarding screen requesting necessary hardware permissions (Location, Motion, Camera, Microphone)
-/// to enable real-time tracking, step counting, and video memory capture with audio.
+/// The initial setup gateway requesting device hardware authorizations.
+///
+/// Prepares the application runtime across four core sensor layers before the primary map loads:
+/// - **CoreLocation:** Trail anchoring and continuous GPS distance tracking.
+/// - **CoreMotion:** Step count telemetry via the coprocessor pedometer.
+/// - **AVFoundation (Camera & Microphone):** Short scenic video memories with ambient audio.
+///
+/// Features immediate permission checking upon appearance and handles graceful degradation
+/// if non-critical sensors are unavailable or declined.
 struct OnboardingView: View {
 	
+	// MARK: - Bindings & Environment
+
+	/// Persisted flag passed from `MainView` indicating completion of the initial onboarding sequence.
 	@Binding var isOnboardingCompleted: Bool
+	
+	/// Global application state coordinator providing access to the underlying `LocationManager`.
 	@Environment(AppState.self) private var appState
+	
+	// MARK: - Permission State
 	
 	@State private var locationAuthorized: Bool = false
 	@State private var motionAuthorized: Bool = false
 	@State private var cameraAuthorized: Bool = false
 	@State private var microphoneAuthorized: Bool = false
 	
+	/// Local pedometer instance utilized specifically to trigger the CoreMotion permission prompt.
 	private let pedometer = CMPedometer()
 	
+	/// Evaluates whether all required sensor permissions have been granted.
 	private var allPermissionsGranted: Bool {
 		locationAuthorized && motionAuthorized && cameraAuthorized && microphoneAuthorized
 	}
-	
+		
 	var body: some View {
 		VStack(spacing: 28) {
 			Spacer()
@@ -86,7 +103,7 @@ struct OnboardingView: View {
 			
 			Spacer()
 			
-			// MARK: - Bottom Action
+			// MARK: - Confirmation Action
 			VStack(spacing: 12) {
 				Button {
 					isOnboardingCompleted = true
@@ -114,7 +131,9 @@ struct OnboardingView: View {
 		}
 	}
 	
-	// MARK: - Subviews
+	// MARK: - UI Subviews
+
+	/// Reusable row component representing an individual sensor permission status and prompt trigger.
 	@ViewBuilder
 	private func permissionRow(
 		icon: String,
@@ -164,6 +183,8 @@ struct OnboardingView: View {
 	}
 	
 	// MARK: - Permission Handlers
+
+	/// Queries the current authorization status across CoreLocation, CoreMotion, and AVFoundation.
 	private func checkCurrentPermissions() {
 		// Location
 		let locStatus = appState.locationManager.authorizationStatus
@@ -184,6 +205,7 @@ struct OnboardingView: View {
 		}
 	}
 	
+	/// Prompts the user for foreground location authorization.
 	private func requestLocationAccess() {
 		appState.locationManager.requestAuthorization()
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -191,6 +213,7 @@ struct OnboardingView: View {
 		}
 	}
 	
+	/// Triggers CoreMotion permissions by dispatching a lightweight historic step query.
 	private func requestMotionAccess() {
 		guard CMPedometer.isStepCountingAvailable() else {
 			motionAuthorized = true
@@ -204,6 +227,7 @@ struct OnboardingView: View {
 		}
 	}
 	
+	/// Prompts for video recording camera hardware access.
 	private func requestCameraAccess() {
 		AVCaptureDevice.requestAccess(for: .video) { granted in
 			DispatchQueue.main.async {
@@ -212,6 +236,7 @@ struct OnboardingView: View {
 		}
 	}
 	
+	/// Prompts for microphone recording audio hardware access.
 	private func requestMicrophoneAccess() {
 		AVAudioApplication.requestRecordPermission { granted in
 			DispatchQueue.main.async {

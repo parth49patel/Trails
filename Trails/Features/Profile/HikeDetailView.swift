@@ -2,25 +2,43 @@
 //  HikeDetailView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-15.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 import MapKit
 import AVKit
 
-/// Presents detailed metrics, user-recorded start/finish points, connecting path,
-/// and pinned video memories for a recorded hike.
+/// Displays the historical telemetry review, path rendering, and media playback for a recorded hike.
+///
+/// Features:
+/// - Reconstructs the chronological route path across recorded start, pinned memory waypoints, and finish coordinates.
+/// - Renders an interactive `MapKit` scene with custom annotations for route boundaries and pinned memories.
+/// - Integrates embedded `AVPlayer` playback for 10-second sandbox-stored video memories.
+/// - Presents the four core session metrics: total distance, active duration, pedometer steps, and memory count.
 struct HikeDetailView: View {
 	
+	// MARK: - Properties
+	
+	/// The persisted hike entity containing telemetry and associated waypoint models.
 	let hike: HikeRecord
 	
+	// MARK: - State
+
+	/// Controls the viewport and camera bounds of the MapKit presentation.
 	@State private var cameraPosition: MapCameraPosition = .automatic
+	
+	/// The currently selected waypoint memory targeted for inline playback.
 	@State private var selectedWaypoint: WaypointMarker?
+	
+	/// The active AVPlayer instance managing local file playback.
 	@State private var activePlayer: AVPlayer?
 	
-	// MARK: - Recorded Route Progression
-	/// Sequence: [Recorded Start] -> [Memory Waypoints in Order] -> [Recorded Finish]
+	// MARK: - Route Reconstruction
+
+	/// Reconstructs the chronological coordinate array: Start -> Ordered Waypoints -> Finish.
+	/// Filters out identical consecutive coordinates to prevent map rendering artifacts.
 	private var recordedPathCoordinates: [CLLocationCoordinate2D] {
 		var points: [CLLocationCoordinate2D] = []
 		
@@ -45,13 +63,13 @@ struct HikeDetailView: View {
 		
 		return points
 	}
-	
+		
 	var body: some View {
 		ScrollView {
 			VStack(spacing: 20) {
-				// MARK: - Map with Start, Finish, Route & Memories
+				// MARK: - Map View
 				Map(position: $cameraPosition) {
-						// Recorded Path Polyline
+					// Recorded Path Polyline
 					if recordedPathCoordinates.count >= 2 {
 						MapPolyline(coordinates: recordedPathCoordinates)
 							.stroke(
@@ -60,7 +78,7 @@ struct HikeDetailView: View {
 							)
 					}
 					
-					// Recorded Start Marker
+					// Start Flag Annotation
 					if let start = hike.startCoordinate {
 						Annotation("Start", coordinate: start) {
 							ZStack {
@@ -76,7 +94,7 @@ struct HikeDetailView: View {
 						}
 					}
 					
-					// Recorded Finish Marker
+					// Finish Flag Annotation
 					if let finish = hike.finishCoordinate, isDistinctPoint(finish, from: hike.startCoordinate) {
 						Annotation("Finish", coordinate: finish) {
 							ZStack {
@@ -92,7 +110,7 @@ struct HikeDetailView: View {
 						}
 					}
 					
-					// Pinned Video Waypoint Markers
+					// Pinned Video Waypoint Pins
 					ForEach(hike.waypoints) { waypoint in
 						Annotation(waypoint.title, coordinate: waypoint.coordinate) {
 							Button {
@@ -124,7 +142,7 @@ struct HikeDetailView: View {
 				.padding(.horizontal, 16)
 				.onAppear { centerMapOnRecordedHike() }
 				
-				// MARK: - Selected Video Player
+				// MARK: - Video Player Overlay
 				if let waypoint = selectedWaypoint, let player = activePlayer {
 					VStack(alignment: .leading, spacing: 8) {
 						HStack {
@@ -188,7 +206,9 @@ struct HikeDetailView: View {
 		.navigationBarTitleDisplayMode(.inline)
 	}
 	
-	// MARK: - Video Playback
+	// MARK: - Video Handling
+	
+	/// Loads and triggers playback for a pinned memory waypoint from the sandboxed Documents directory.
 	private func playVideo(for waypoint: WaypointMarker) {
 		guard let url = waypoint.localFileURL, FileManager.default.fileExists(atPath: url.path) else {
 			return
@@ -197,7 +217,10 @@ struct HikeDetailView: View {
 		self.activePlayer = AVPlayer(url: url)
 	}
 	
-	// MARK: - Centering Map on Hike Bounds
+	// MARK: - Map Geometry & Bounds
+
+	/// Calculates the minimum bounding box encompassing all recorded route points
+	/// and smoothly centers the camera span.
 	private func centerMapOnRecordedHike() {
 		let points = recordedPathCoordinates
 		guard !points.isEmpty else { return }
@@ -233,13 +256,14 @@ struct HikeDetailView: View {
 		)
 	}
 	
-	// MARK: - Distance Equality Check
+	/// Evaluates if two geographical coordinates represent distinctly separate physical positions.
 	private func isDistinctPoint(_ p1: CLLocationCoordinate2D, from p2: CLLocationCoordinate2D?) -> Bool {
 		guard let p2 else { return true }
 		return abs(p1.latitude - p2.latitude) > 0.0001 || abs(p1.longitude - p2.longitude) > 0.0001
 	}
 	
-	// MARK: - Helpers
+	// MARK: - Formatting Helpers
+	
 	@ViewBuilder
 	private func metricTile(label: String, value: String, icon: String) -> some View {
 		VStack(alignment: .leading, spacing: 6) {
@@ -268,5 +292,13 @@ struct HikeDetailView: View {
 }
 
 #Preview {
-	HikeDetailView(hike: HikeRecord(userId: "123", trailName: "Pleasure Valley", distanceMeters: 24.90, durationSeconds: 400, stepCount: 5000))
+	HikeDetailView(
+		hike: HikeRecord(
+			userId: "preview_user",
+			trailName: "Pleasure Valley",
+			distanceMeters: 2490.0,
+			durationSeconds: 400,
+			stepCount: 5000
+		)
+	)
 }

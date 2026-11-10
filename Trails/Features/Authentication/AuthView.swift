@@ -2,18 +2,24 @@
 //  AuthView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-07.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 import FirebaseSignInWithApple
 
+/// The gateway authentication screen for the Trails application.
+///
+/// Presents an introductory overview of the core telemetry and tracking capabilities
+/// (distance, step count, active duration, and video memories) while facilitating
+/// identity management through Firebase Authentication integrated with Sign in with Apple.
 struct AuthView: View {
 	var body: some View {
 		VStack(spacing: 32) {
 			Spacer()
 			
-				// MARK: - Logo & App Title
+			// MARK: - Branding & Hero Header
 			VStack(spacing: 16) {
 				ZStack {
 					Circle()
@@ -35,7 +41,7 @@ struct AuthView: View {
 				}
 			}
 			
-				// MARK: - Core Metrics Overview
+			// MARK: - Feature Highlights
 			VStack(alignment: .leading, spacing: 16) {
 				FeatureRow(
 					icon: "figure.walk",
@@ -62,8 +68,9 @@ struct AuthView: View {
 			
 			Spacer()
 			
-				// MARK: - Sign-In Action
+			// MARK: - Authentication Actions
 			VStack(spacing: 12) {
+				// Native Apple Sign-In flow bridged via Firebase Authentication
 				FirebaseSignInWithAppleButton {
 					FirebaseSignInWithAppleLabel(.signIn)
 				}

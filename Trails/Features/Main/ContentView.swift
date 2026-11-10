@@ -2,35 +2,56 @@
 //  ContentView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-07.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 import MapKit
 import SwiftData
 
-/// The primary map interface orchestrating trail selection, active hike HUD presentation,
-/// and live pinned waypoint markers.
+/// The primary map dashboard orchestrating trail exploration, live session tracking, and HUD states.
+///
+/// Coordinates several core UX layers:
+/// - **Interactive MapKit Viewport:** Renders the user position, start anchors for nearby trails,
+///   and dynamically updates with video memory waypoints pinned during an active hike.
+/// - **Collapsible Bottom Sheet:** Embeds `BottomSheetView` across three presentation detents
+///   (`.fraction(0.18)`, `.medium`, `.large`), enabling non-blocking background map interaction.
+/// - **Tracking HUD Overlay:** Dynamically presents `HikeTrackingView` at the top of the view
+///   hierarchy when a hike session transitions into an active or paused state.
 struct ContentView: View {
 	
+	// MARK: - Dependencies & Context
+
+	/// Global application state coordinator governing hardware managers and tracking states.
 	@Environment(AppState.self) private var appState
+	
+	/// SwiftData managed context injected into AppState for local persistence operations.
 	@Environment(\.modelContext) private var modelContext
 	
+	// MARK: - View State
+
+	/// Map camera viewport targeting the Oshawa and Durham Region trail systems by default.
 	@State private var cameraPosition: MapCameraPosition = .region(
 		MKCoordinateRegion(
 			center: CLLocationCoordinate2D(latitude: 43.8800, longitude: -78.8350),
 			span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
 		)
 	)
-	@State private var showingBottomSheet: Bool = true
-	@State private var selectedDetent: PresentationDetent = .fraction(0.18)
 	
+	/// Governs whether the bottom sheet containing trail listings is presented.
+	@State private var showingBottomSheet: Bool = true
+	
+	/// The active detent state for the collapsible bottom sheet presentation.
+	@State private var selectedDetent: PresentationDetent = .fraction(0.18)
+		
 	var body: some View {
 		ZStack(alignment: .top) {
+			// MARK: - Map Viewport
 			Map(position: $cameraPosition) {
 				UserAnnotation()
 				
-				// MARK: - Pre-stored Trail Start Anchors
+				// Pre-stored Trail Start Anchors
 				ForEach(appState.availableTrails) { trail in
 					Annotation(trail.name, coordinate: trail.startCoordinate) {
 						Circle()
@@ -42,7 +63,7 @@ struct ContentView: View {
 					}
 				}
 				
-				// MARK: - Live Pinned Memories (Waypoints)
+				// Live Pinned Memories (Waypoints)
 				ForEach(appState.recordedWaypoints) { waypoint in
 					Annotation(waypoint.title, coordinate: waypoint.coordinate) {
 						ZStack {
@@ -70,7 +91,7 @@ struct ContentView: View {
 				appState.locationManager.requestAuthorization()
 			}
 			
-			// MARK: - Active Hike HUD
+			// MARK: - Active Hike HUD Overlay
 			if appState.isHikeActive {
 				HikeTrackingView()
 					.padding(.horizontal, 16)
@@ -79,6 +100,7 @@ struct ContentView: View {
 					.zIndex(10)
 			}
 		}
+		// Restore bottom sheet when a tracking session finishes or returns to idle
 		.onChange(of: appState.hikeStatus) { oldStatus, newStatus in
 			if oldStatus != .idle && newStatus == .idle {
 				withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
@@ -87,6 +109,7 @@ struct ContentView: View {
 				}
 			}
 		}
+		// MARK: - Trail Discovery Bottom Sheet
 		.sheet(isPresented: $showingBottomSheet) {
 			BottomSheetView(
 				trails: appState.availableTrails,
@@ -119,6 +142,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+	ContentView()
 		.environment(AppState())
 }

@@ -2,30 +2,49 @@
 //  ProfileView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-08.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 import SwiftData
 import FirebaseSignInWithApple
 
-/// Displays user profile details, cumulative activity metrics, hike history, and account controls.
+/// Displays user profile details, aggregate lifetime telemetry metrics, and local hike history.
+///
+/// Integrates with **SwiftData** via `@Query` to automatically observe and render all persisted
+/// `HikeRecord` models chronologically, while providing Firebase account management actions
+/// (sign out and account deletion).
 struct ProfileView: View {
 	
+	// MARK: - Environment & Dependencies
+
+	/// Global application state coordinator.
 	@Environment(AppState.self) private var appState
+	
+	/// Presentation dismissal trigger for closing the modal sheet.
 	@Environment(\.dismiss) private var dismiss
+	
+	/// SwiftData managed context used to execute persistent deletions.
 	@Environment(\.modelContext) private var modelContext
+	
+	// MARK: - Persistent Queries
+	
+	/// Live-updating query of all completed hike records, sorted newest to oldest.
 	@Query(sort: \HikeRecord.date, order: .reverse) private var hikes: [HikeRecord]
 	
-	// MARK: - Cumulative Core Metrics
+	// MARK: - Computed Lifetime Metrics
+	
+	/// Cumulative distance covered across all recorded hikes, in kilometers.
 	private var totalDistanceKm: Double {
 		hikes.reduce(0.0) { $0 + $1.distanceKm }
 	}
 	
+	/// Cumulative steps logged across all recorded sessions.
 	private var totalSteps: Int {
 		hikes.reduce(0) { $0 + $1.stepCount }
 	}
-	
+		
 	var body: some View {
 		NavigationStack {
 			List {
@@ -99,6 +118,10 @@ struct ProfileView: View {
 	}
 	
 	// MARK: - Persistence Actions
+
+	/// Removes a targeted hike record from SwiftData and commits changes to disk.
+	///
+	/// - Parameter hike: The `HikeRecord` entity targeted for deletion.
 	private func deleteSingleHike(_ hike: HikeRecord) {
 		modelContext.delete(hike)
 		do {
@@ -109,6 +132,8 @@ struct ProfileView: View {
 	}
 	
 	// MARK: - UI Helpers
+
+	/// Reusable stat counter component for high-level lifetime telemetry summary.
 	@ViewBuilder
 	private func statCell(title: String, value: String) -> some View {
 		VStack(alignment: .leading, spacing: 4) {
@@ -123,6 +148,6 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ProfileView()
+	ProfileView()
 		.environment(AppState())
 }
