@@ -2,21 +2,37 @@
 //  HikeTrackingView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-14.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 
-/// Heads-Up Display (HUD) overlay rendering active session controls and live telemetry
-/// for the 4 core metrics: elapsed time, distance covered, step count, and pinned memories.
+/// A Heads-Up Display (HUD) overlay rendering active session controls and real-time telemetry.
+///
+/// Presents live metrics for the 4 core tracking dimensions:
+/// - Active duration (timer accounting for paused intervals)
+/// - Distance covered (filtered GPS accumulation)
+/// - Step count (CoreMotion coprocessor stream)
+/// - Video memories (pinned AVFoundation captures)
+///
+/// ### Architecture Note:
+/// To prevent modal hierarchy window collisions where camera dismissals caused parent bottom
+/// sheets to overlap active tracking controls, the camera `.fullScreenCover` is hoisted directly
+/// to this view and bound through `@Bindable(appState).isShowingCamera`.
 struct HikeTrackingView: View {
 	
+	// MARK: - Environment & State
+
+	/// Global application state coordinator managing active telemetry streams and session state.
 	@Environment(AppState.self) private var appState
-	@State private var showingEndConfirmation: Bool = false
 	
+	/// Tracks presentation state for the destructive hike completion confirmation dialog.
+	@State private var showingEndConfirmation: Bool = false
+		
 	var body: some View {
 		VStack(spacing: 10) {
-			// MARK: - Primary Row (Trail Name, Timer, Distance & Controls)
+			// MARK: - Primary Row (Trail Identity, Timer, Distance & Controls)
 			HStack(spacing: 12) {
 				VStack(alignment: .leading, spacing: 2) {
 					HStack(spacing: 6) {
@@ -44,9 +60,9 @@ struct HikeTrackingView: View {
 				
 				Spacer(minLength: 8)
 				
-				// MARK: - Active Controls
+				// MARK: - Session Action Controls
 				HStack(spacing: 8) {
-					// Pin Video Memory Button
+					// Trigger 10-second AVFoundation video recording sheet
 					Button {
 						appState.isShowingCamera = true
 					} label: {
@@ -58,7 +74,7 @@ struct HikeTrackingView: View {
 							.clipShape(Circle())
 					}
 					
-					// Pause / Resume Toggle
+					// Toggle active / paused session state
 					Button {
 						withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
 							if appState.hikeStatus == .active {
@@ -80,7 +96,7 @@ struct HikeTrackingView: View {
 							.clipShape(Circle())
 					}
 					
-					// End Hike Action
+					// Trigger completion confirmation dialog
 					Button {
 						showingEndConfirmation = true
 					} label: {
@@ -97,7 +113,7 @@ struct HikeTrackingView: View {
 			Divider()
 				.background(Color.white.opacity(0.15))
 			
-			// MARK: - Core Telemetry Row (Steps & Pinned Memories)
+			// MARK: - Secondary Telemetry Row (Steps, Waypoints, Sensor Status)
 			HStack(spacing: 0) {
 				telemetryItem(
 					label: "STEPS",
@@ -151,7 +167,9 @@ struct HikeTrackingView: View {
 		}
 	}
 	
-	// MARK: - Telemetry Item Subview
+	// MARK: - UI Helpers
+
+	/// Reusable subview rendering a compact label, system icon, and monospaced telemetry value.
 	@ViewBuilder
 	private func telemetryItem(label: String, value: String, icon: String) -> some View {
 		VStack(spacing: 2) {
@@ -172,6 +190,6 @@ struct HikeTrackingView: View {
 }
 
 #Preview {
-    HikeTrackingView()
+	HikeTrackingView()
 		.environment(AppState())
 }

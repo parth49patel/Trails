@@ -2,17 +2,24 @@
 //  HikeRowView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-15.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 
-/// A list row presenting a historical hike record with its 4 core metrics:
-/// distance, duration, step count, and pinned memories.
+/// A list row component presenting a persisted hike record.
+///
+/// Summarizes the session across its primary telemetry metrics: total distance,
+/// active duration, pedometer step count, completion date, and an indicator badge
+/// for attached video memory waypoints.
 struct HikeRowView: View {
 	
+	// MARK: - Properties
+
+	/// The persisted SwiftData record providing telemetry data and waypoint associations.
 	let hike: HikeRecord
-	
+		
 	var body: some View {
 		HStack(spacing: 14) {
 			// MARK: - Leading Icon
@@ -35,11 +42,15 @@ struct HikeRowView: View {
 				HStack(spacing: 8) {
 					Text(String(format: "%.2f km", hike.distanceKm))
 						.font(.caption.monospacedDigit().weight(.medium))
+					
 					Divider()
+					
 					Text(formattedDuration(seconds: hike.durationSeconds))
 						.font(.caption.monospacedDigit())
 						.foregroundStyle(.secondary)
+					
 					Divider()
+					
 					Text("\(hike.stepCount.formatted()) steps")
 						.font(.caption.monospacedDigit())
 						.foregroundStyle(.secondary)
@@ -58,6 +69,7 @@ struct HikeRowView: View {
 					HStack(spacing: 3) {
 						Image(systemName: "video.fill")
 							.font(.system(size: 10))
+						
 						Text("\(hike.waypoints.count)")
 							.font(.caption2.weight(.medium))
 					}
@@ -68,6 +80,12 @@ struct HikeRowView: View {
 		.padding(.vertical, 2)
 	}
 	
+	// MARK: - Helper Methods
+
+	/// Formats total elapsed seconds into a zero-padded `MM:SS` duration string.
+	///
+	/// - Parameter seconds: Total active time in seconds.
+	/// - Returns: A formatted string representing minutes and seconds.
 	private func formattedDuration(seconds: Int) -> String {
 		let mins = seconds / 60
 		let secs = seconds % 60
@@ -76,5 +94,14 @@ struct HikeRowView: View {
 }
 
 #Preview {
-	HikeRowView(hike: HikeRecord(userId: "123", trailName: "Pleasure Valley", distanceMeters: 24.90, durationSeconds: 400, stepCount: 5000))
+	HikeRowView(
+		hike: HikeRecord(
+			userId: "preview_user",
+			trailName: "Pleasure Valley Loop",
+			distanceMeters: 2490.0,
+			durationSeconds: 400,
+			stepCount: 5000
+		)
+	)
+	.padding()
 }

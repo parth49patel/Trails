@@ -2,29 +2,43 @@
 //  StatBadge.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-08.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 
-/// A compact badge pairing an SF Symbol icon with a concise telemetry metric or label.
+/// A reusable micro-badge component pairing an SF Symbol with a concise telemetry metric.
+///
+/// Designed for high-density layouts such as trail cards, summary sheets, and tracking HUDs.
 struct StatBadge: View {
 	
-	let icon: String
-	let label: String
+	// MARK: - Properties
 	
-    var body: some View {
+	/// The SF Symbol name displayed as the leading indicator.
+	let icon: String
+	
+	/// The formatted telemetry value or descriptor text.
+	let label: String
+		
+	var body: some View {
 		HStack(spacing: 4) {
 			Image(systemName: icon)
 				.font(.caption2)
 				.foregroundStyle(.secondary)
+			
 			Text(label)
 				.font(.caption.weight(.medium))
 				.foregroundStyle(.primary)
 		}
-    }
+	}
 }
 
 #Preview {
-	StatBadge(icon: "bell", label: "")
+	HStack(spacing: 12) {
+		StatBadge(icon: "ruler", label: "5.4 km")
+		StatBadge(icon: "clock", label: "45 min")
+		StatBadge(icon: "figure.walk", label: "7,200")
+	}
+	.padding()
 }

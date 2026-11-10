@@ -2,23 +2,37 @@
 //  VideoCaptureView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-30.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
-/// A SwiftUI wrapper over `UIImagePickerController` configured for capturing short scenic video memories.
+/// A SwiftUI `UIViewControllerRepresentable` bridge wrapping UIKit's `UIImagePickerController`.
+///
+/// Configured specifically for capturing short scenic video memories on active trails.
+/// Enforces a hard 10-second capture cap with medium video compression to balance visual
+/// quality against local sandbox storage constraints. Gracefully falls back to the system
+/// photo library when running inside Xcode simulator environments lacking hardware camera access.
 struct VideoCaptureView: UIViewControllerRepresentable {
 	
+	// MARK: - Properties
+
+	/// Closure triggered with the temporary file URL upon successful video capture.
 	let onVideoRecorded: (URL) -> Void
+	
+	/// Presentation dismissal trigger for closing the native camera sheet.
 	@Environment(\.dismiss) private var dismiss
 	
+	// MARK: - UIViewControllerRepresentable Lifecycle
+
+	/// Instantiates and configures the native `UIImagePickerController` instance.
 	func makeUIViewController(context: Context) -> UIImagePickerController {
 		let picker = UIImagePickerController()
 		
-		// Use camera on real hardware; fall back to photo library on simulator
+		// Use hardware camera when available; fall back to library for simulator debugging
 		if UIImagePickerController.isSourceTypeAvailable(.camera) {
 			picker.sourceType = .camera
 			picker.mediaTypes = [UTType.movie.identifier]
@@ -40,6 +54,9 @@ struct VideoCaptureView: UIViewControllerRepresentable {
 		Coordinator(self)
 	}
 	
+	// MARK: - Coordinator (Delegate Handling)
+
+	/// Coordinates delegate callbacks from UIKit's `UIImagePickerController` back into SwiftUI state.
 	final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
 		let parent: VideoCaptureView
 		
@@ -47,6 +64,7 @@ struct VideoCaptureView: UIViewControllerRepresentable {
 			self.parent = parent
 		}
 		
+		/// Invoked when the user completes a video recording or selects a video asset.
 		func imagePickerController(
 			_ picker: UIImagePickerController,
 			didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
@@ -57,6 +75,7 @@ struct VideoCaptureView: UIViewControllerRepresentable {
 			parent.dismiss()
 		}
 		
+		/// Invoked when the user cancels the camera interface without recording.
 		func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
 			parent.dismiss()
 		}

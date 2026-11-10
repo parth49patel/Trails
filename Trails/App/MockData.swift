@@ -2,12 +2,21 @@
 //  MockData.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-08.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import Foundation
 
+/// Provides static mock data fixtures for SwiftUI previews, UI testing, and offline development.
+///
+/// Implemented as an uninhabited `enum` namespace to prevent instantiation.
 enum MockData {
+	
+	// MARK: - Sample Trails
+
+	/// Curated collection of sample `Trail` objects across varying lengths and durations,
+	/// used to populate preview canvases without requiring asynchronous bundle decoding.
 	static let sampleTrails: [Trail] = [
 		Trail(
 			id: "trail_01",

@@ -2,20 +2,33 @@
 //  TrailCardView.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-08.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 
-/// A card component displaying high-level metrics for a trail option
-/// and an action button to initiate the hike when selected.
+/// An interactive card component presenting summary telemetry for a candidate trail.
+///
+/// Displays distance, estimated duration, and step count in equal-width badges.
+/// When selected, the card animates an accent outline and reveals a direct call-to-action
+/// button to initiate live tracking.
 struct TrailCardView: View {
 	
-	let trail: Trail
-	let isSelected: Bool
-	let onSelect: () -> Void
-	let onStart: () -> Void
+	// MARK: - Properties
 	
+	/// The trail entity providing telemetry metrics and geographic identifiers.
+	let trail: Trail
+	
+	/// Indicates whether this card is currently selected by the user.
+	let isSelected: Bool
+	
+	/// Closure invoked when the card container is tapped to toggle selection.
+	let onSelect: () -> Void
+	
+	/// Closure invoked when the user confirms and initiates tracking on this trail.
+	let onStart: () -> Void
+		
 	var body: some View {
 		VStack(alignment: .leading, spacing: 12) {
 			// MARK: - Header
@@ -32,7 +45,7 @@ struct TrailCardView: View {
 			}
 			.frame(maxWidth: .infinity, alignment: .leading)
 			
-			// MARK: - Core Metrics Badges (Equal-Width Columns)
+			// MARK: - Core Metrics Badges
 			HStack(spacing: 8) {
 				StatBadge(icon: "ruler", label: String(format: "%.1f km", trail.distanceKm))
 					.frame(maxWidth: .infinity, alignment: .leading)
@@ -44,7 +57,7 @@ struct TrailCardView: View {
 					.frame(maxWidth: .infinity, alignment: .leading)
 			}
 			
-			// MARK: - Selection Action
+			// MARK: - Action Trigger
 			if isSelected {
 				Button(action: onStart) {
 					HStack {
@@ -66,7 +79,7 @@ struct TrailCardView: View {
 		.frame(maxWidth: .infinity, alignment: .leading)
 		.background(
 			RoundedRectangle(cornerRadius: 14)
-				.fill(Color(UIColor.secondarySystemGroupedBackground))
+				.fill(.thinMaterial)
 				.overlay(
 					RoundedRectangle(cornerRadius: 14)
 						.stroke(isSelected ? .accent : Color.clear, lineWidth: 1.5)
@@ -80,24 +93,25 @@ struct TrailCardView: View {
 		}
 	}
 }
+
 #Preview {
 	VStack(spacing: 16) {
-			// Unselected state
-			TrailCardView(
-				trail: MockData.sampleTrails[0],
-				isSelected: false,
-				onSelect: {},
-				onStart: {}
-			)
-			
-			// Selected state (shows the "Start This Hike" button)
-			TrailCardView(
-				trail: MockData.sampleTrails[0],
-				isSelected: true,
-				onSelect: {},
-				onStart: {}
-			)
-		}
-		.padding()
-		.background(Color(UIColor.systemGroupedBackground))
+		// Unselected state
+		TrailCardView(
+			trail: MockData.sampleTrails[0],
+			isSelected: false,
+			onSelect: {},
+			onStart: {}
+		)
+		
+		// Selected state (shows the "Start This Hike" button)
+		TrailCardView(
+			trail: MockData.sampleTrails[0],
+			isSelected: true,
+			onSelect: {},
+			onStart: {}
+		)
+	}
+	.padding()
+	.background(Color(UIColor.systemGroupedBackground))
 }

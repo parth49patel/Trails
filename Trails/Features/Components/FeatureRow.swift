@@ -2,20 +2,33 @@
 //  FeatureRow.swift
 //  Trails
 //
-//  Created by Parth Patel on 2026-10-08.
+//  Course: SOFE4640U Mobile Application Development
+//  Group:  10
 //
 
 import SwiftUI
 
-/// A reusable row component for presenting key feature highlights with an SF Symbol icon.
+/// A reusable presentation component displaying a highlighted application feature.
+///
+/// Pairs a system-symbol badge within a translucent circular container with a
+/// dual-line title and descriptive summary, used across authentication and onboarding flows.
 struct FeatureRow: View {
 	
+	// MARK: - Properties
+
+	/// The SF Symbol name rendered within the circular icon container.
 	let icon: String
-	let title: String
-	let description: String
-	let accent: Color
 	
-    var body: some View {
+	/// The primary header text describing the capability.
+	let title: String
+	
+	/// Secondary explanatory copy providing context on how the feature operates.
+	let description: String
+	
+	/// The foreground tint applied to the SF Symbol.
+	let accent: Color
+		
+	var body: some View {
 		HStack(alignment: .top, spacing: 14) {
 			Image(systemName: icon)
 				.font(.headline)
@@ -34,9 +47,15 @@ struct FeatureRow: View {
 					.foregroundStyle(.secondary)
 			}
 		}
-    }
+	}
 }
 
 #Preview {
-	FeatureRow(icon: "", title: "", description: "", accent: .accentColor)
+	FeatureRow(
+		icon: "figure.walk",
+		title: "Step Telemetry",
+		description: "Tracks active steps using CoreMotion coprocessor data.",
+		accent: .green
+	)
+	.padding()
 }
