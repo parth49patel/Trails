@@ -12,8 +12,8 @@ import CoreLocation
 /// Represents an immutable curated trail template available for exploration and tracking.
 ///
 /// Encapsulates baseline route telemetry (distance, estimated duration, step counts) alongside
-/// geographic trailhead coordinates. Conforms to `Sendable` and `Codable` for thread-safe
-/// transport across concurrent Swift tasks and bundle decoding.
+/// geographic trailhead start and finish coordinates. Conforms to `Sendable` and `Codable`
+/// for thread-safe transport across concurrent Swift tasks and bundle decoding.
 struct Trail: Identifiable, Codable, Hashable, Sendable {
 	
 	// MARK: - Properties
@@ -42,11 +42,32 @@ struct Trail: Identifiable, Codable, Hashable, Sendable {
 	/// Longitude component of the starting trailhead anchor.
 	let startLongitude: Double
 	
+	/// Latitude component of the ending trailhead anchor.
+	let endLatitude: Double?
+	
+	/// Longitude component of the ending trailhead anchor.
+	let endLongitude: Double?
+	
 	// MARK: - Computed Properties
 
-	/// Converts persistent latitude and longitude primitives into a MapKit-ready `CLLocationCoordinate2D`.
+	/// Converts persistent starting latitude and longitude into a MapKit-ready `CLLocationCoordinate2D`.
 	var startCoordinate: CLLocationCoordinate2D {
 		CLLocationCoordinate2D(latitude: startLatitude, longitude: startLongitude)
+	}
+	
+	/// Converts persistent ending latitude and longitude into a MapKit-ready `CLLocationCoordinate2D`.
+	var endCoordinate: CLLocationCoordinate2D? {
+		guard let endLatitude, let endLongitude else { return nil }
+		return CLLocationCoordinate2D(latitude: endLatitude, longitude: endLongitude)
+	}
+	
+	/// Ordered polyline coordinates connecting the trail's start anchor to its finish anchor.
+	var routeCoordinates: [CLLocationCoordinate2D] {
+		var coords = [startCoordinate]
+		if let endCoordinate {
+			coords.append(endCoordinate)
+		}
+		return coords
 	}
 	
 	// MARK: - Hashable & Equatable

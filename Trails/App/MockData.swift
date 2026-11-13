@@ -26,7 +26,9 @@ enum MockData {
 			estimatedDurationMinutes: 95,
 			estimatedSteps: 7200,
 			startLatitude: 49.2827,
-			startLongitude: -123.1207
+			startLongitude: -123.1207,
+			endLatitude: 49.2827,
+			endLongitude: 49.2827
 		),
 		Trail(
 			id: "trail_02",
@@ -36,7 +38,9 @@ enum MockData {
 			estimatedDurationMinutes: 45,
 			estimatedSteps: 4300,
 			startLatitude: 49.2910,
-			startLongitude: -123.1350
+			startLongitude: -123.1350,
+			endLatitude: 49.2827,
+			endLongitude: 49.2827
 		),
 		Trail(
 			id: "trail_03",
@@ -46,7 +50,9 @@ enum MockData {
 			estimatedDurationMinutes: 190,
 			estimatedSteps: 11000,
 			startLatitude: 49.3000,
-			startLongitude: -123.1100
+			startLongitude: -123.1100,
+			endLatitude: 49.2827,
+			endLongitude: 49.2827
 		),
 		Trail(
 			id: "trail_04",
@@ -56,7 +62,9 @@ enum MockData {
 			estimatedDurationMinutes: 70,
 			estimatedSteps: 6400,
 			startLatitude: 49.3200,
-			startLongitude: -123.1500
+			startLongitude: -123.1500,
+			endLatitude: 49.2827,
+			endLongitude: 49.2827
 		),
 		Trail(
 			id: "trail_05",
@@ -66,7 +74,9 @@ enum MockData {
 			estimatedDurationMinutes: 110,
 			estimatedSteps: 8300,
 			startLatitude: 49.3350,
-			startLongitude: -123.1650
+			startLongitude: -123.1650,
+			endLatitude: 49.2827,
+			endLongitude: 49.2827
 		),
 		Trail(
 			id: "trail_06",
@@ -76,7 +86,9 @@ enum MockData {
 			estimatedDurationMinutes: 150,
 			estimatedSteps: 12800,
 			startLatitude: 49.3500,
-			startLongitude: -123.1800
+			startLongitude: -123.1800,
+			endLatitude: 49.2827,
+			endLongitude: 49.2827
 		)
 	]
 }
