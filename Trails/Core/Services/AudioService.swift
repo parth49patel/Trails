@@ -11,10 +11,10 @@ import AVFoundation
 
 /// Singleton service managing real-time spoken audio feedback during hiking sessions.
 ///
-/// Integrates `AVSpeechSynthesizer` and configures `AVAudioSession` with `.voicePrompt`
-/// and `.duckOthers` to announce pacing updates and kilometer milestones over background
-/// audio without interrupting navigation or music playback.
-final class AudioService: NSObject {
+/// Integrates `AVSpeechSynthesizer` and configures `AVAudioSession` off the main thread
+/// using `.voicePrompt` and `.duckOthers` to announce session lifecycle transitions and
+/// kilometer milestones without blocking UI rendering.
+final class AudioService: NSObject, @unchecked Sendable {
 	
 	// MARK: - Singleton Instance
 
@@ -26,24 +26,29 @@ final class AudioService: NSObject {
 	/// The core speech synthesis engine driving vocal announcements.
 	private let synthesizer = AVSpeechSynthesizer()
 	
+	/// Dedicated background queue preventing synchronous AVAudioSession IPC calls from blocking the Main Thread.
+	private let audioQueue = DispatchQueue(label: "com.trails.audioSessionQueue", qos: .userInitiated)
+	
 	/// Tracks the latest integer kilometer milestone announced to prevent duplicate prompts.
 	private var lastAnnouncedDistanceKm: Int = 0
 	
 	// MARK: - Initialization & Hardware Configuration
-
-	/// Initializes the speech synthesizer and configures system audio routing.
+	
 	private override init() {
 		super.init()
-		configureAudioSession()
+		audioQueue.async { [weak self] in
+			self?.configureAudioSessionSync()
+		}
 	}
 	
-	/// Sets up the device audio session category and mixing options.
+	/// Sets up the device audio session category and mixing options synchronously on a background queue.
 	///
 	/// Non-obvious Engineering Logic:
 	/// - `.voicePrompt` optimizes vocal frequency curves through headphones and phone speakers.
 	/// - `.duckOthers` temporarily attenuates background music or podcast volume while speaking.
 	/// - `.interruptSpokenAudioAndMixWithOthers` ensures spoken prompts do not terminate third-party media apps.
-	private func configureAudioSession() {
+	/// - Executed on `audioQueue` to avoid Main Thread Checker IPC latency warnings.
+	private func configureAudioSessionSync() {
 		do {
 			let session = AVAudioSession.sharedInstance()
 			try session.setCategory(
@@ -61,22 +66,40 @@ final class AudioService: NSObject {
 
 	/// Synthesizes and speaks a text prompt using naturalized vocal pacing.
 	///
-	/// - Parameter text: The string transcript to synthesize.
-	func speak(_ text: String) {
-		let utterance = AVSpeechUtterance(string: text)
-		utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-		
-		// Slightly reduced rate (0.95x) ensures speech remains intelligible in windy outdoor environments
-		utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.95
-		utterance.pitchMultiplier = 1.0
-		synthesizer.speak(utterance)
+	/// - Parameters:
+	///   - text: The string transcript to synthesize.
+	///   - interruptCurrent: Stops any currently speaking utterance so immediate state cues play without delay.
+	func speak(_ text: String, interruptCurrent: Bool = true) {
+		audioQueue.async { [weak self] in
+			guard let self else { return }
+			
+			// Configure hardware audio session off the main thread
+			self.configureAudioSessionSync()
+			
+			if interruptCurrent && self.synthesizer.isSpeaking {
+				self.synthesizer.stopSpeaking(at: .immediate)
+			}
+			
+			let utterance = AVSpeechUtterance(string: text)
+			utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+			utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.95
+			utterance.pitchMultiplier = 1.0
+			
+			self.synthesizer.speak(utterance)
+		}
 	}
 	
-	/// Resets milestone tracking state and immediately stops any ongoing speech synthesis.
-	func reset() {
+	/// Resets milestone tracking state.
+	/// - Parameter interruptSpeech: Pass `false` when ending a hike so completion cues finish speaking.
+	func reset(interruptSpeech: Bool = true) {
 		lastAnnouncedDistanceKm = 0
-		if synthesizer.isSpeaking {
-			synthesizer.stopSpeaking(at: .immediate)
+		if interruptSpeech {
+			audioQueue.async { [weak self] in
+				guard let self else { return }
+				if self.synthesizer.isSpeaking {
+					self.synthesizer.stopSpeaking(at: .immediate)
+				}
+			}
 		}
 	}
 	
@@ -88,13 +111,12 @@ final class AudioService: NSObject {
 	func evaluateMilestone(distanceMeters: Double) {
 		let currentKm = Int(distanceMeters / 1000.0)
 		
-		// Announce solely when crossing into a new integer kilometer boundary
 		if currentKm > lastAnnouncedDistanceKm && currentKm > 0 {
 			lastAnnouncedDistanceKm = currentKm
 			
 			let unit = currentKm == 1 ? "kilometer" : "kilometers"
 			let message = "Milestone reached. You have completed \(currentKm) \(unit)."
-			speak(message)
+			speak(message, interruptCurrent: false)
 		}
 	}
 }

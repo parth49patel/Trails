@@ -1,10 +1,10 @@
-//
-//  AppState.swift
-//  Trails
-//
-//  Course: SOFE4640U Mobile Application Development
-//  Group:  10
-//
+	//
+	//  AppState.swift
+	//  Trails
+	//
+	//  Course: SOFE4640U Mobile Application Development
+	//  Group:  10
+	//
 
 import Foundation
 import CoreLocation
@@ -167,11 +167,13 @@ final class AppState {
 
 	/// Initiates a new tracking session for a specific trail or an unguided Free Roam hike.
 	///
-	/// Resets all cumulative metrics, captures the initial coordinate anchor, begins sensor
-	/// streaming via `LocationManager`, and starts the 1 Hz duration timer.
+	/// Resets all cumulative metrics, captures the initial coordinate anchor before resetting
+	/// the location manager, begins sensor streaming, and starts the 1 Hz duration timer.
 	///
 	/// - Parameter trail: The curated trail selected by the user, or `nil` for Free Roam.
 	func startHike(for trail: Trail? = nil) {
+		let preResetCoord = locationManager.userLocation?.coordinate
+		
 		self.selectedTrail = trail
 		self.elapsedSeconds = 0
 		self.distanceMeters = 0.0
@@ -179,11 +181,15 @@ final class AppState {
 		self.recordedWaypoints.removeAll()
 		self.hikeStatus = .active
 		
-		// Capture start anchor (selected trail coordinate, or immediate user GPS fix)
-		self.sessionStartCoordinate = trail?.startCoordinate ?? locationManager.userLocation?.coordinate
+		// Anchor start coordinate immediately using selected trailhead or pre-reset GPS fix
+		self.sessionStartCoordinate = trail?.startCoordinate ?? preResetCoord
 		
 		locationManager.reset()
 		locationManager.startTracking()
+		
+		AudioService.shared.reset(interruptSpeech: true)
+		let targetName = trail?.name ?? "Hike"
+		AudioService.shared.speak("Starting \(targetName).")
 		
 		startTimer()
 		bindLocationTelemetry()
@@ -195,6 +201,7 @@ final class AppState {
 		hikeStatus = .paused
 		stopTimer()
 		locationManager.pauseTracking()
+		AudioService.shared.speak("Hike paused.")
 	}
 	
 	/// Resumes tracking from a paused state, restoring timer updates and sensor sampling.
@@ -204,6 +211,7 @@ final class AppState {
 		startTimer()
 		locationManager.startTracking()
 		bindLocationTelemetry()
+		AudioService.shared.speak("Resuming hike.")
 	}
 	
 	/// Cancels or tears down the current session without persisting records to disk.
@@ -212,6 +220,7 @@ final class AppState {
 		stopTimer()
 		telemetryObservationTask?.cancel()
 		locationManager.reset()
+		AudioService.shared.reset(interruptSpeech: false)
 	}
 	
 	/// Finalizes the active hike session, compiles telemetry data into a `HikeRecord`,
@@ -225,9 +234,16 @@ final class AppState {
 		let finalSteps = stepCount
 		let waypointsToSave = self.recordedWaypoints
 		
-		// Final coordinate reading from LocationManager
-		let finishCoord = locationManager.userLocation?.coordinate
-		let startCoord = self.sessionStartCoordinate ?? finishCoord
+		// Use the exact first and last validated GPS fixes from LocationManager
+		let startCoord = locationManager.firstValidLocation?.coordinate
+		?? self.sessionStartCoordinate
+		?? selectedTrail?.startCoordinate
+		?? waypointsToSave.first?.coordinate
+		
+		let finishCoord = locationManager.lastValidLocation?.coordinate
+		?? locationManager.userLocation?.coordinate
+		?? waypointsToSave.last?.coordinate
+		?? startCoord
 		
 		let record = HikeRecord(
 			userId: currentUserId,
@@ -248,6 +264,12 @@ final class AppState {
 			context.insert(record)
 			try? context.save()
 		}
+		
+		// Announce hike completion summary aloud
+		let distanceFormatted = String(format: "%.2f", finalDistance / 1000.0)
+		AudioService.shared.speak(
+			"Hike ended and saved. Total distance \(distanceFormatted) kilometers and \(finalSteps) steps."
+		)
 		
 		self.sessionStartCoordinate = nil
 		self.recordedWaypoints.removeAll()
@@ -280,9 +302,18 @@ final class AppState {
 			while !Task.isCancelled {
 				guard let self, self.hikeStatus == .active else { break }
 				
+				// Lock in the starting coordinate as soon as the first valid GPS fix arrives
+				if self.sessionStartCoordinate == nil,
+				   let firstFix = self.locationManager.firstValidLocation?.coordinate ?? self.locationManager.userLocation?.coordinate {
+					self.sessionStartCoordinate = firstFix
+				}
+				
 				// Pull hardware readings for core metrics
 				self.distanceMeters = self.locationManager.totalDistanceMeters
 				self.stepCount = self.locationManager.liveSteps
+				
+				// Check for 1 km audio milestones
+				AudioService.shared.evaluateMilestone(distanceMeters: self.distanceMeters)
 				
 				try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s update cadence
 			}

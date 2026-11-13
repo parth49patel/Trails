@@ -20,7 +20,7 @@ import AVKit
 struct HikeDetailView: View {
 	
 	// MARK: - Properties
-	
+
 	/// The persisted hike entity containing telemetry and associated waypoint models.
 	let hike: HikeRecord
 	
@@ -37,33 +37,66 @@ struct HikeDetailView: View {
 	
 	// MARK: - Route Reconstruction
 
-	/// Reconstructs the chronological coordinate array: Start -> Ordered Waypoints -> Finish.
-	/// Filters out identical consecutive coordinates to prevent map rendering artifacts.
+	/// Resolves the starting coordinate for the hike.
+	private var resolvedStartCoordinate: CLLocationCoordinate2D? {
+		hike.startCoordinate ?? hike.waypoints.first?.coordinate ?? hike.finishCoordinate
+	}
+	
+	/// Returns the finish coordinate if the user walked at least 2.5 meters (matching LocationManager's filter).
+	/// If the user walked a closed loop back to the exact starting coordinate, applies a tiny ~8m offset
+	/// so both the Start and Finish flags and the connecting polyline remain clearly visible.
+	private var resolvedFinishCoordinate: CLLocationCoordinate2D? {
+		guard let finish = hike.finishCoordinate else { return nil }
+		guard let start = resolvedStartCoordinate else { return finish }
+		
+		let startLoc = CLLocation(latitude: start.latitude, longitude: start.longitude)
+		let finishLoc = CLLocation(latitude: finish.latitude, longitude: finish.longitude)
+		let straightLineDist = finishLoc.distance(from: startLoc)
+		
+		// Enforce the 2.5m minimum displacement gate against walked distance or endpoint separation
+		guard hike.distanceMeters >= 2.5 || straightLineDist >= 2.5 else {
+			return nil
+		}
+		
+		// If the user walked >= 2.5m in a loop back to the starting point, separate the flags slightly
+		if straightLineDist < 2.5 {
+			return CLLocationCoordinate2D(
+				latitude: finish.latitude + 0.00008,
+				longitude: finish.longitude + 0.00008
+			)
+		}
+		
+		return finish
+	}
+	
+	/// Reconstructs the chronological coordinate array: Start -> Waypoints (>= 2.5m apart) -> Finish.
+	/// If total displacement is less than 2.5m, only a single coordinate is returned so no polyline draws.
 	private var recordedPathCoordinates: [CLLocationCoordinate2D] {
 		var points: [CLLocationCoordinate2D] = []
 		
-		if let start = hike.startCoordinate {
+		if let start = resolvedStartCoordinate {
 			points.append(start)
 		}
 		
 		for wp in hike.waypoints {
-			points.append(wp.coordinate)
-		}
-		
-		if let finish = hike.finishCoordinate {
-			// Avoid duplicate identical point at the tail
 			if let last = points.last {
-				if abs(last.latitude - finish.latitude) > 0.00005 || abs(last.longitude - finish.longitude) > 0.00005 {
-					points.append(finish)
+				let lastLoc = CLLocation(latitude: last.latitude, longitude: last.longitude)
+				let wpLoc = CLLocation(latitude: wp.latitude, longitude: wp.longitude)
+				if wpLoc.distance(from: lastLoc) >= 2.5 {
+					points.append(wp.coordinate)
 				}
 			} else {
-				points.append(finish)
+				points.append(wp.coordinate)
 			}
+		}
+		
+		if let finish = resolvedFinishCoordinate {
+			points.append(finish)
 		}
 		
 		return points
 	}
-		
+	
 	var body: some View {
 		ScrollView {
 			VStack(spacing: 20) {
@@ -79,32 +112,32 @@ struct HikeDetailView: View {
 					}
 					
 					// Start Flag Annotation
-					if let start = hike.startCoordinate {
+					if let start = resolvedStartCoordinate {
 						Annotation("Start", coordinate: start) {
 							ZStack {
 								Circle()
 									.fill(Color.green)
-									.frame(width: 24, height: 24)
+									.frame(width: 26, height: 26)
 									.overlay(Circle().stroke(Color.white, lineWidth: 2))
 									.shadow(radius: 2)
 								Image(systemName: "flag.fill")
-									.font(.system(size: 10, weight: .bold))
+									.font(.system(size: 11, weight: .bold))
 									.foregroundStyle(.white)
 							}
 						}
 					}
 					
 					// Finish Flag Annotation
-					if let finish = hike.finishCoordinate, isDistinctPoint(finish, from: hike.startCoordinate) {
+					if let finish = resolvedFinishCoordinate {
 						Annotation("Finish", coordinate: finish) {
 							ZStack {
 								Circle()
 									.fill(Color.red)
-									.frame(width: 24, height: 24)
+									.frame(width: 26, height: 26)
 									.overlay(Circle().stroke(Color.white, lineWidth: 2))
 									.shadow(radius: 2)
 								Image(systemName: "flag.checkered")
-									.font(.system(size: 10, weight: .bold))
+									.font(.system(size: 11, weight: .bold))
 									.foregroundStyle(.white)
 							}
 						}
@@ -207,7 +240,7 @@ struct HikeDetailView: View {
 	}
 	
 	// MARK: - Video Handling
-	
+
 	/// Loads and triggers playback for a pinned memory waypoint from the sandboxed Documents directory.
 	private func playVideo(for waypoint: WaypointMarker) {
 		guard let url = waypoint.localFileURL, FileManager.default.fileExists(atPath: url.path) else {
@@ -229,7 +262,7 @@ struct HikeDetailView: View {
 			cameraPosition = .region(
 				MKCoordinateRegion(
 					center: singlePoint,
-					span: MKCoordinateSpan(latitudeDelta: 0.015, longitudeDelta: 0.015)
+					span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
 				)
 			)
 			return
@@ -245,8 +278,8 @@ struct HikeDetailView: View {
 			latitude: (minLat + maxLat) / 2.0,
 			longitude: (minLon + maxLon) / 2.0
 		)
-		let deltaLat = max((maxLat - minLat) * 1.5, 0.008)
-		let deltaLon = max((maxLon - minLon) * 1.5, 0.008)
+		let deltaLat = max((maxLat - minLat) * 1.6, 0.003)
+		let deltaLon = max((maxLon - minLon) * 1.6, 0.003)
 		
 		cameraPosition = .region(
 			MKCoordinateRegion(
@@ -254,12 +287,6 @@ struct HikeDetailView: View {
 				span: MKCoordinateSpan(latitudeDelta: deltaLat, longitudeDelta: deltaLon)
 			)
 		)
-	}
-	
-	/// Evaluates if two geographical coordinates represent distinctly separate physical positions.
-	private func isDistinctPoint(_ p1: CLLocationCoordinate2D, from p2: CLLocationCoordinate2D?) -> Bool {
-		guard let p2 else { return true }
-		return abs(p1.latitude - p2.latitude) > 0.0001 || abs(p1.longitude - p2.longitude) > 0.0001
 	}
 	
 	// MARK: - Formatting Helpers

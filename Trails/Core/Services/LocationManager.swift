@@ -55,8 +55,11 @@ final class LocationManager {
 	/// Asynchronous Task wrapping the modern `CLLocationUpdate.liveUpdates` async sequence.
 	private var trackingTask: Task<Void, Never>?
 	
-	/// The prior validated GPS location used for incremental distance delta calculations.
-	private var lastValidLocation: CLLocation?
+	/// The very first valid GPS location recorded after tracking begins.
+	private(set) var firstValidLocation: CLLocation?
+	
+	/// The prior validated GPS location used for incremental distance delta calculations and finish anchoring.
+	private(set) var lastValidLocation: CLLocation?
 	
 	// MARK: - Initialization
 
@@ -84,7 +87,6 @@ final class LocationManager {
 		if authorizationStatus == .notDetermined { requestAuthorization() }
 		
 		isTracking = true
-		lastValidLocation = nil
 		
 		// MARK: - CoreMotion Pedometer Setup
 		if CMPedometer.isStepCountingAvailable() {
@@ -130,6 +132,7 @@ final class LocationManager {
 		totalDistanceMeters = 0.0
 		liveSteps = 0
 		userLocation = nil
+		firstValidLocation = nil
 		lastValidLocation = nil
 	}
 	
@@ -150,6 +153,13 @@ final class LocationManager {
 		
 		self.userLocation = location
 		
+		// Lock in the first valid GPS fix as the session's true starting anchor
+		if firstValidLocation == nil {
+			firstValidLocation = location
+			lastValidLocation = location
+			return
+		}
+		
 		// Accumulate distance between consecutive valid GPS fixes
 		if let lastLocation = lastValidLocation {
 			let delta = location.distance(from: lastLocation)
@@ -159,8 +169,6 @@ final class LocationManager {
 				totalDistanceMeters += delta
 				lastValidLocation = location
 			}
-		} else {
-			lastValidLocation = location
 		}
 	}
 }
